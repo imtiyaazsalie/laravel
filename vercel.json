@@ -8,6 +8,7 @@
             "config": {
                 "php.ini": {
                     "extension_dir": "/var/task/php/extensions",
+                    "expose_php" : "off",
                     "extension": [
                         "openssl",
                         "pdo",
