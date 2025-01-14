@@ -4,7 +4,18 @@
     "builds": [
         {
             "src": "api/index.php",
-            "use": "vercel-php@0.6.0"
+            "use": "vercel-php@0.6.0",
+            "config": {
+                "php.ini": {
+                    "extension_dir": "/var/task/php/extensions",
+                    "extension": [
+                        "openssl",
+                        "pdo",
+                        "pdo_mysql",
+                        "mbstring"
+                    ]
+                }
+            }
         },
         {
             "src": "package.json",
