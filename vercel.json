@@ -9,7 +9,7 @@
         "dest": "/api/index.php"
     }],
     "env": {
-        "APP_ENV": "production",
+        "APP_ENV": "sandbox",
         "APP_DEBUG": "true",
         "APP_URL": "https://yourprojectdomain.com",
 
