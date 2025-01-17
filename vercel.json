@@ -5,18 +5,6 @@
         {
             "src": "api/index.php",
             "use": "vercel-php@0.7.3",
-            "config": {
-                "php.ini": {
-                    "extension_dir": "/var/task/php/extensions",
-                    "expose_php" : "off",
-                    "extension": [
-                        "openssl",
-                        "pdo",
-                        "pdo_mysql",
-                        "mbstring"
-                    ]
-                }
-            }
         },
         {
             "src": "package.json",
