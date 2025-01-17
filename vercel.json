@@ -4,7 +4,7 @@
     "builds": [
         {
             "src": "api/index.php",
-            "use": "vercel-php@0.7.3",
+            "use": "vercel-php@0.6.2",
             "config": {
                 "php.ini": {
                     "extension_dir": "/var/task/php/extensions",
