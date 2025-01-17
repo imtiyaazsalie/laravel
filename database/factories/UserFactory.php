@@ -2,33 +2,30 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
     /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
-
-    /**
      * Define the model's default state.
-     *
-     * @return array<string, mixed>
      */
     public function definition(): array
     {
+        // Cater for no gender
+        $gender = rand(0, 2);
+
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'name' => $gender === 1 ? fake()->firstNameMale : ($gender === 2 ? fake()->firstNameFemale : fake()->firstName),
+            'surname' => fake()->lastName,
+            'email' => fake()->unique()->safeEmail,
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'dob' => $this->faker->dateTimeBetween('-60 years', '-20 years')->format('Y-m-d'),
+            'mobile' => $this->faker->phoneNumber,
+            'gender_id' => $gender !== 0 ? $gender : null,
         ];
     }
 

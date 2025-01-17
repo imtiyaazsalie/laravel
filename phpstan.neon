@@ -1,0 +1,23 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+
+    paths:
+        - app/
+
+    # Level 9 is the highest level
+    level: 5
+
+    ignoreErrors:
+        - '#PHPDoc tag @param#'
+        - '#Access to an undefined property#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_\<\>]+::joinRelationship\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_\<\>]+::allowedFilters\(\)#'
+        - '#Dead catch - Illuminate\\Contracts\\Container\\BindingResolutionException is never thrown in the try block#'
+
+
+#    excludePaths:
+#        - ./*/*/FileToBeExcluded.php
+#
+#    checkMissingIterableValueType: false

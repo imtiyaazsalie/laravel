@@ -1,0 +1,3236 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('access_privileges', function (Blueprint $table) {
+            $table->integer('access_privilege_id', true);
+            $table->string('key')->unique('UNIQ_426B61938A90ABA9');
+            $table->string('name');
+            $table->string('description');
+            $table->string('category');
+        });
+
+        Schema::create('access_privileges_to_user_types', function (Blueprint $table) {
+            $table->integer('access_privilege_id')->index('IDX_AEB04D9DEEB712A8');
+            $table->integer('user_type_id')->index('IDX_AEB04D9D9D419299');
+
+            $table->primary(['access_privilege_id', 'user_type_id']);
+        });
+
+        Schema::create('account_types', function (Blueprint $table) {
+            $table->integer('account_type_id', true);
+            $table->string('account_type_descr', 50);
+            $table->string('import_code', 2);
+            $table->integer('export_code_namibia');
+        });
+
+        Schema::create('amendment_amendments', function (Blueprint $table) {
+            $table->integer('amendment_id', true);
+            $table->integer('created_by_id')->nullable()->index('IDX_A5621DD3B03A8386');
+            $table->integer('box_id')->nullable()->index('IDX_A5621DD3D8177B3F');
+            $table->integer('ref_entity_id');
+            $table->string('ref_entity_name');
+            $table->dateTime('created_on');
+            $table->json('changes')->nullable();
+        });
+
+        Schema::create('attendance_records', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('box_facility_id')->nullable()->index('IDX_9B5AB64485BC5E22');
+            $table->integer('user_id')->nullable()->index('IDX_9B5AB644A76ED395');
+            $table->integer('class_booking_id')->nullable()->unique('UNIQ_9B5AB644B53DEEC2');
+            $table->integer('class_to_date_id')->nullable()->index('IDX_9B5AB6448002F93C');
+            $table->integer('health_provider_id')->nullable()->index('IDX_9B5AB6448200BD4');
+            $table->dateTime('checked_in_at');
+            $table->dateTime('checked_out_at')->nullable();
+            $table->string('id_number', 13)->nullable();
+            $table->string('name')->nullable();
+            $table->string('surname')->nullable();
+            $table->dateTime('date_of_birth')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on')->nullable();
+        });
+
+        Schema::create('banks', function (Blueprint $table) {
+            $table->integer('bank_id', true);
+            $table->integer('country_id')->nullable()->index('IDX_AB063796F92F3E70');
+            $table->string('bank_name');
+            $table->string('universal_code')->nullable();
+            $table->string('import_code')->nullable();
+        });
+
+        Schema::create('body_measurement', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('user_id')->nullable()->index('IDX_E574BF11A76ED395');
+            $table->integer('created_by_id')->nullable()->index('IDX_E574BF11B03A8386');
+            $table->integer('tricep')->nullable();
+            $table->integer('subscapular')->nullable();
+            $table->integer('abdominal')->nullable();
+            $table->integer('suprailiac')->nullable();
+            $table->integer('thigh')->nullable();
+            $table->integer('calf')->nullable();
+            $table->double('body_fat_percentage')->nullable();
+            $table->dateTime('recorded_on');
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on');
+        });
+
+        Schema::create('body_weight', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('user_id')->nullable()->index('IDX_92D1F647A76ED395');
+            $table->integer('created_by_id')->nullable()->index('IDX_92D1F647B03A8386');
+            $table->double('weight');
+            $table->dateTime('recorded_on');
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on');
+        });
+
+        Schema::create('box_facilities_to_health_providers', function (Blueprint $table) {
+            $table->integer('box_facility_id')->index('IDX_F3F54F3885BC5E22');
+            $table->integer('health_provider_id')->index('IDX_F3F54F388200BD4');
+
+            $table->primary(['box_facility_id', 'health_provider_id']);
+        });
+
+        Schema::create('box_facility', function (Blueprint $table) {
+            $table->integer('box_facility_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_419E5616D8177B3F');
+            $table->integer('payment_gateway_id')->nullable()->index('IDX_419E561662890FD5');
+            $table->integer('timezone_id')->nullable()->index('IDX_419E56163FE997DE');
+            $table->integer('box_facility_category_id')->nullable()->index('IDX_419E5616295EDF79');
+            $table->string('box_facility_prefix');
+            $table->string('box_facility_name');
+            $table->string('business_name')->nullable();
+            $table->string('vat', 30)->nullable();
+            $table->longText('invoiceinfo')->nullable();
+            $table->string('logofile', 100)->nullable();
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_modified')->nullable();
+            $table->boolean('is_active');
+            $table->boolean('can_debit')->nullable();
+            $table->integer('invoice_code_index');
+            $table->decimal('vat_percent', 10);
+            $table->boolean('view_class_bookings')->nullable()->default(true);
+            $table->integer('max_bookings_per_athlete_per_day');
+            $table->json('extra_parameters')->nullable();
+            $table->boolean('show_invoice_totals')->default(true);
+            $table->string('public_token')->nullable()->unique('UNIQ_419E5616AE981E3B');
+            $table->string('lead_redirect_url')->nullable();
+            $table->string('lead_request_demo_redirect_url')->nullable();
+            $table->string('sign_up_redirect_url')->nullable();
+            $table->integer('class_schedule_number_of_days')->default(105);
+            $table->char('attendance_code', 16)->charset('binary')->nullable();
+            $table->dateTime('attendance_code_expires_on')->nullable();
+            $table->boolean('display_booking_details')->nullable()->default(true);
+            $table->string('description')->nullable();
+            $table->string('address')->nullable();
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->string('image_one')->nullable();
+            $table->string('image_two')->nullable();
+            $table->string('image_three')->nullable();
+            $table->string('image_four')->nullable();
+            $table->boolean('visible_in_app_sessions')->nullable()->default(true);
+        });
+
+        Schema::create('box_facility_categories', function (Blueprint $table) {
+            $table->integer('box_facility_category_id', true);
+            $table->string('name');
+        });
+
+        Schema::create('box_facility_to_payment_gateway', function (Blueprint $table) {
+            $table->integer('facility_to_payment_gateway_id', true);
+            $table->integer('box_facility_id')->nullable()->index('IDX_548EBDB685BC5E22');
+            $table->integer('payment_gateway_id')->nullable()->index('IDX_548EBDB662890FD5');
+            $table->string('credentials')->nullable();
+            $table->dateTime('dt_added');
+            $table->dateTime('dt_modified');
+            $table->tinyInteger('is_active');
+            $table->string('context');
+        });
+
+        Schema::create('box_settings', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('box_id')->nullable()->unique('UNIQ_B4826261D8177B3F');
+            $table->integer('created_by_id')->nullable()->index('IDX_B4826261B03A8386');
+            $table->integer('updated_by_id')->nullable()->index('IDX_B4826261896DBBDE');
+            $table->json('theme')->nullable();
+            $table->json('hidden_features')->nullable();
+            $table->string('logo_path')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on')->nullable();
+            $table->boolean('is_user_contract_visible_in_app');
+            $table->boolean('coronavirus_is_enabled')->default(true);
+            $table->boolean('coronavirus_is_enabled_questionnaire_member_app')->default(true);
+            $table->boolean('coronavirus_can_display_vaccination_details_roster')->default(true);
+            $table->boolean('coronavirus_can_display_vaccination_details_class')->default(true);
+        });
+
+        Schema::create('box_status', function (Blueprint $table) {
+            $table->integer('box_status_id', true);
+            $table->string('box_status_desc');
+        });
+
+        Schema::create('boxes', function (Blueprint $table) {
+            $table->integer('box_id', true);
+            $table->integer('box_status_id')->nullable()->index('IDX_CDF1B2E9BA1DA08E');
+            $table->integer('country_id')->nullable()->index('IDX_CDF1B2E9F92F3E70');
+            $table->integer('region_id')->nullable()->index('IDX_CDF1B2E998260155');
+            $table->string('box_desc');
+            $table->dateTime('dt_added');
+            $table->dateTime('dt_modified')->nullable();
+            $table->longText('contract_terms_and_conditions')->nullable();
+            $table->string('currency');
+            $table->integer('booking_threshold');
+            $table->string('public_token')->nullable();
+            $table->boolean('deactivate_contracts_ended');
+            $table->integer('box_billing_currency_id')->nullable()->index('IDX_CDF1B2E9C764CF44');
+            $table->integer('member_billing_currency_id')->nullable()->index('IDX_CDF1B2E928B3B407');
+            $table->integer('timezone_id')->nullable()->index('IDX_CDF1B2E93FE997DE');
+            $table->boolean('is_trial');
+            $table->string('cash_member_invoice_due_day')->nullable();
+            $table->integer('max_bookings_per_athlete_per_day');
+            $table->string('cash_member_invoice_generation_day')->nullable();
+            $table->string('cash_member_invoice_strategy')->nullable();
+            $table->json('signup_payment_options')->nullable();
+            $table->boolean('signup_use_contract_and_waivers');
+            $table->json('signup_debit_day_options')->nullable();
+            $table->integer('workout_threshold');
+            $table->string('pro_rate_strategy')->default('manual');
+            $table->boolean('limit_inter_facility_bookings');
+            $table->string('lead_redirect_url')->nullable();
+            $table->string('sign_up_redirect_url')->nullable();
+            $table->string('lead_request_demo_redirect_url')->nullable();
+            $table->integer('contract_expiry_notfication_days')->default(7);
+            $table->json('extra_parameters')->nullable();
+            $table->boolean('publish_workout');
+            $table->longText('description')->nullable();
+            $table->string('website_url')->nullable();
+            $table->string('instagram_url')->nullable();
+            $table->string('facebook_url')->nullable();
+        });
+
+        Schema::create('broadcast_messages', function (Blueprint $table) {
+            $table->integer('broadcast_message_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_67F48E11D8177B3F');
+            $table->longText('broadcast_message');
+            $table->boolean('is_active');
+            $table->dateTime('dt_modified')->nullable();
+        });
+
+        Schema::create('class_booking_status', function (Blueprint $table) {
+            $table->integer('class_booking_status_id', true);
+            $table->string('class_booking_status_descr');
+        });
+
+        Schema::create('class_booking_waiting_list', function (Blueprint $table) {
+            $table->integer('class_booking_waiting_id', true);
+            $table->integer('class_to_date_id')->nullable()->index('IDX_CB61292F8002F93C');
+            $table->integer('class_id')->nullable()->index('IDX_CB61292FEA000B10');
+            $table->integer('user_id')->nullable()->index('IDX_CB61292FA76ED395');
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_modified')->nullable();
+            $table->string('status');
+            $table->integer('user_package_id')->nullable()->index('IDX_CB61292F532B6D13');
+            $table->integer('created_by_id')->nullable()->index('IDX_CB61292FB03A8386');
+            $table->integer('updated_by_id')->nullable()->index('IDX_CB61292F896DBBDE');
+        });
+
+        Schema::create('class_bookings', function (Blueprint $table) {
+            $table->integer('class_booking_id', true);
+            $table->integer('class_booking_status_id')->nullable()->index('IDX_CE4BF765B022641C');
+            $table->integer('class_to_date_id')->nullable()->index('IDX_CE4BF7658002F93C');
+            $table->integer('class_id')->nullable()->index('IDX_CE4BF765EA000B10');
+            $table->integer('user_id')->nullable()->index('IDX_CE4BF765A76ED395');
+            $table->integer('lead_member_id')->nullable()->index('IDX_CE4BF765EC34D1C6');
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_modified')->nullable();
+            $table->string('non_member_name')->nullable();
+            $table->string('non_member_email')->nullable();
+            $table->boolean('is_checked_in');
+            $table->integer('created_by_id')->nullable()->index('IDX_CE4BF765B03A8386');
+            $table->integer('updated_by_id')->nullable()->index('IDX_CE4BF765896DBBDE');
+            $table->integer('user_package_id')->nullable()->index('IDX_CE4BF765532B6D13');
+            $table->boolean('top_up_used');
+            $table->integer('class_recurring_booking_id')->nullable()->index('IDX_CE4BF76578314B7A');
+            $table->dateTime('checked_in_at')->nullable();
+            $table->boolean('is_checked_out');
+            $table->dateTime('checked_out_at')->nullable();
+        });
+
+        Schema::create('class_coaches', function (Blueprint $table) {
+            $table->integer('class_coach_id', true);
+            $table->integer('class_id')->nullable()->index('IDX_1667099EA000B10');
+            $table->integer('coach_id')->nullable()->index('IDX_16670993C105691');
+            $table->integer('coach_type_id')->nullable()->index('IDX_16670997E9C64DB');
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_modified')->nullable();
+            $table->boolean('is_active');
+        });
+
+        Schema::create('class_days', function (Blueprint $table) {
+            $table->integer('class_day_id', true);
+            $table->string('class_day_descr');
+        });
+
+        Schema::create('class_recurring_bookings', function (Blueprint $table) {
+            $table->integer('class_recurring_booking_id', true);
+            $table->integer('class_id')->nullable()->index('IDX_D6A9D44FEA000B10');
+            $table->integer('user_id')->nullable()->index('IDX_D6A9D44FA76ED395');
+            $table->integer('user_package_id')->nullable()->index('IDX_D6A9D44F532B6D13');
+            $table->integer('created_by_id')->nullable()->index('IDX_D6A9D44FB03A8386');
+            $table->boolean('active');
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_modified')->nullable();
+            $table->dateTime('dt_deactivate')->nullable();
+        });
+
+        Schema::create('class_recurring_bookings_days_of_week', function (Blueprint $table) {
+            $table->integer('class_recurring_booking_id')->index('IDX_AA82052278314B7A');
+            $table->integer('class_day_id')->index('IDX_AA820522C69E039E');
+
+            $table->primary(['class_recurring_booking_id', 'class_day_id']);
+        });
+
+        Schema::create('class_to_dates', function (Blueprint $table) {
+            $table->integer('class_to_date_id', true);
+            $table->integer('class_id')->nullable()->index('IDX_1486337EEA000B10');
+            $table->date('class_date')->index('class_date_idx');
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_modified')->nullable();
+            $table->boolean('is_active');
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
+            $table->integer('coach_id')->nullable()->index('IDX_1486337E3C105691');
+            $table->integer('class_limit')->nullable();
+            $table->integer('supporting_coach_id')->nullable()->index('IDX_1486337E80917240');
+            $table->integer('updated_by_id')->nullable()->index('IDX_1486337E896DBBDE');
+            $table->string('meeting_url')->nullable();
+            $table->string('name')->nullable();
+            $table->string('description')->nullable();
+        });
+
+        Schema::create('class_to_days', function (Blueprint $table) {
+            $table->integer('class_to_day_id', true);
+            $table->integer('class_id')->nullable()->index('IDX_C97F8A55EA000B10');
+            $table->integer('day_id')->nullable()->index('IDX_C97F8A559C24126');
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_modified')->nullable();
+            $table->boolean('is_active');
+        });
+
+        Schema::create('class_to_packages', function (Blueprint $table) {
+            $table->integer('class_to_package_id', true);
+            $table->integer('class_id')->nullable()->index('IDX_6E82913FEA000B10');
+            $table->integer('package_id')->nullable()->index('IDX_6E82913FF44CABFF');
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_modified')->nullable();
+            $table->boolean('is_active');
+        });
+
+        Schema::create('class_types', function (Blueprint $table) {
+            $table->integer('class_type_id', true);
+            $table->string('class_type_descr');
+        });
+
+        Schema::create('classes', function (Blueprint $table) {
+            $table->integer('class_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_2ED7EC5D8177B3F');
+            $table->integer('box_facility_id')->nullable()->index('IDX_2ED7EC585BC5E22');
+            $table->integer('capturer_id')->nullable()->index('IDX_2ED7EC5B573AD6A');
+            $table->integer('class_type_id')->nullable()->index('IDX_2ED7EC539EB6F');
+            $table->string('class_name');
+            $table->longText('description');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->integer('class_limit')->nullable();
+            $table->integer('cancellation_threshhold')->nullable();
+            $table->boolean('is_free');
+            $table->dateTime('dt_added');
+            $table->dateTime('dt_modified')->nullable();
+            $table->boolean('is_active');
+            $table->integer('booking_threshold')->nullable();
+            $table->boolean('is_display_coach_name');
+            $table->dateTime('dt_deactivated')->nullable();
+            $table->integer('updated_by_id')->nullable()->index('IDX_2ED7EC5896DBBDE');
+            $table->dateTime('recurring_end_date')->nullable();
+            $table->boolean('is_session');
+            $table->boolean('is_visible_in_app');
+            $table->string('meeting_url')->nullable();
+            $table->boolean('is_virtual');
+        });
+
+        Schema::create('coach_rates', function (Blueprint $table) {
+            $table->integer('coach_rate_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_5056C816A76ED395');
+            $table->integer('box_facility_id')->nullable()->index('IDX_5056C81685BC5E22');
+            $table->string('strategy');
+            $table->string('type');
+            $table->decimal('amount', 10);
+            $table->integer('min_members')->nullable();
+            $table->integer('max_members')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on');
+            $table->boolean('deleted')->nullable();
+        });
+
+        Schema::create('coach_types', function (Blueprint $table) {
+            $table->integer('coach_type_id', true);
+            $table->string('coach_type_descr');
+            $table->boolean('is_active');
+        });
+
+        Schema::create('coronavirus_vaccination_details', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('user_id')->nullable()->unique('UNIQ_DCB62998A76ED395');
+            $table->integer('box_id')->nullable()->index('IDX_DCB62998D8177B3F');
+            $table->integer('created_by_id')->nullable()->index('IDX_DCB62998B03A8386');
+            $table->integer('updated_by_id')->nullable()->index('IDX_DCB62998896DBBDE');
+            $table->string('status');
+            $table->string('file')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on')->nullable();
+        });
+
+        Schema::create('countries', function (Blueprint $table) {
+            $table->integer('country_id', true);
+            $table->string('country_name');
+            $table->integer('country_timezone')->nullable();
+            $table->integer('region_id')->nullable()->index('IDX_5D66EBAD98260155');
+            $table->string('code')->nullable();
+        });
+
+        Schema::create('covid19_questionnaire_results', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('class_booking_id')->nullable()->unique('UNIQ_F5402DFB53DEEC2');
+            $table->integer('created_by_id')->nullable()->index('IDX_F5402DFB03A8386');
+            $table->integer('updated_by_id')->nullable()->index('IDX_F5402DF896DBBDE');
+            $table->double('temperature');
+            $table->boolean('has_cough')->nullable();
+            $table->boolean('has_difficulty_breathing')->nullable();
+            $table->boolean('has_fever')->nullable();
+            $table->boolean('has_been_in_contact_experiencing')->nullable();
+            $table->boolean('has_been_in_contact_positive')->nullable();
+            $table->boolean('has_travelled')->nullable();
+            $table->string('travelled_where')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on')->nullable();
+        });
+
+        Schema::create('crm_attachments', function (Blueprint $table) {
+            $table->integer('attachment_id', true);
+            $table->integer('mailer_id')->nullable()->index('IDX_A4E26FF23F989867');
+            $table->string('attachment_name')->nullable();
+            $table->string('attachment_mime')->nullable();
+            $table->string('attachment_path')->nullable();
+        });
+
+        Schema::create('crm_mailers', function (Blueprint $table) {
+            $table->integer('mailer_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_27250D8DD8177B3F');
+            $table->integer('box_facility_id')->nullable()->index('IDX_27250D8D85BC5E22');
+            $table->integer('created_by_id')->nullable()->index('IDX_27250D8DB03A8386');
+            $table->string('name')->nullable();
+            $table->longText('content')->nullable();
+            $table->json('schedule')->nullable();
+            $table->string('type');
+            $table->string('status')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on')->nullable();
+            $table->boolean('deleted')->nullable();
+            $table->string('discr');
+            $table->string('emailSubject', 128)->nullable();
+            $table->string('reply_to', 90)->nullable();
+            $table->string('sender_name', 300)->nullable();
+            $table->string('title')->nullable();
+            $table->dateTime('sent_on')->nullable();
+            $table->string('image_header')->nullable();
+            $table->string('image_footer')->nullable();
+        });
+
+        Schema::create('crm_mailing_groups', function (Blueprint $table) {
+            $table->integer('mailing_group_id', true);
+            $table->string('name', 100);
+            $table->string('unsubscribe_content')->nullable();
+        });
+
+        Schema::create('crm_mailing_lists', function (Blueprint $table) {
+            $table->integer('mailing_list_id', true);
+            $table->string('name', 100);
+            $table->json('filters')->nullable();
+            $table->integer('box_id')->nullable()->index('IDX_2CFFD04AD8177B3F');
+        });
+
+        Schema::create('crm_notification_unsubscriptions', function (Blueprint $table) {
+            $table->integer('notification_subscription_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_8B1CD4C4A76ED395');
+            $table->integer('notification_id')->nullable()->index('IDX_8B1CD4C4EF1A9D84');
+            $table->dateTime('created_on');
+        });
+
+        Schema::create('crm_notification_widgets', function (Blueprint $table) {
+            $table->smallInteger('notification_widget_id', true);
+            $table->string('channels');
+            $table->string('name');
+            $table->string('key');
+            $table->boolean('enabled');
+            $table->string('user_types');
+            $table->smallInteger('order_index');
+            $table->integer('notification_id')->nullable()->index('IDX_C8662C6EF1A9D84');
+        });
+
+        Schema::create('crm_notifications', function (Blueprint $table) {
+            $table->integer('notification_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_118DD598D8177B3F');
+            $table->integer('mailing_group_id')->nullable()->index('IDX_118DD5982348756B');
+            $table->string('name', 100);
+            $table->string('status', 100);
+            $table->string('emailSubject', 128)->nullable();
+            $table->longText('emailContent')->nullable();
+            $table->string('smsContent', 130)->nullable();
+            $table->json('schedule')->nullable();
+            $table->json('channels')->nullable();
+            $table->string('attachment')->nullable();
+            $table->string('attachment_mime')->nullable();
+            $table->string('attachment_name')->nullable();
+            $table->string('system_type')->nullable();
+            $table->integer('user_id')->nullable()->index('IDX_118DD598A76ED395');
+            $table->integer('parent_id')->nullable()->index('IDX_118DD598727ACA70');
+            $table->string('system_context')->nullable();
+            $table->string('description', 300);
+            $table->string('email_index', 300)->nullable();
+            $table->boolean('unsubscribable')->nullable();
+            $table->string('cc', 1024)->nullable();
+        });
+
+        Schema::create('crm_notifications_mailing_lists', function (Blueprint $table) {
+            $table->integer('notification_id')->index('IDX_165ECE7EF1A9D84');
+            $table->integer('mailing_list_id')->index('IDX_165ECE72C7EF3E4');
+
+            $table->primary(['notification_id', 'mailing_list_id']);
+        });
+
+        Schema::create('crm_recipients', function (Blueprint $table) {
+            $table->integer('recipient_id', true);
+            $table->integer('mailer_id')->nullable()->index('IDX_51F8044C3F989867');
+            $table->string('ref_entity_name', 400)->nullable();
+            $table->integer('ref_entity_id')->nullable();
+            $table->string('type')->nullable();
+            $table->string('name')->nullable();
+            $table->string('email')->nullable();
+            $table->string('mobile')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on');
+        });
+
+        Schema::create('crm_settings', function (Blueprint $table) {
+            $table->integer('setting_id', true);
+            $table->integer('box_id')->nullable()->unique('UNIQ_8BC2ED6ED8177B3F');
+            $table->integer('box_facility_id')->nullable()->unique('UNIQ_8BC2ED6E85BC5E22');
+            $table->string('sms_status');
+            $table->string('email_status');
+            $table->longText('email_signature')->nullable();
+            $table->boolean('test_mode');
+            $table->string('test_email_address')->nullable();
+            $table->string('test_mobile')->nullable();
+            $table->integer('sms_sent');
+            $table->integer('email_sent');
+            $table->string('reply_to', 90)->nullable();
+            $table->string('file_relative_path')->nullable();
+            $table->string('file_absolute_path')->nullable();
+            $table->string('file_mime')->nullable();
+            $table->string('file_name')->nullable();
+            $table->string('sender_name', 300)->nullable();
+        });
+
+        Schema::create('currencies', function (Blueprint $table) {
+            $table->integer('currency_id', true);
+            $table->string('name');
+            $table->char('code', 3);
+            $table->string('notes')->nullable();
+        });
+
+        Schema::create('debit_batch_statements', function (Blueprint $table) {
+            $table->integer('debit_batch_statement_download_request_id', true);
+            $table->integer('debit_batch_id')->index('IDX_C7E7569A7C1380C4');
+            $table->dateTime('dt_requested');
+            $table->dateTime('dt_downloaded')->nullable();
+            $table->dateTime('dt_reconciled')->nullable();
+            $table->string('polling_id')->nullable();
+            $table->longText('content')->nullable();
+            $table->dateTime('dt');
+        });
+
+        Schema::create('debit_batches', function (Blueprint $table) {
+            $table->integer('debit_batch_id', true);
+            $table->integer('debit_day_date_id')->index('IDX_18CE248F5D5E719C');
+            $table->integer('box_facility_id')->index('IDX_18CE248F85BC5E22');
+            $table->string('debit_batch_filename')->nullable();
+            $table->float('debit_batch_total', 10, 0);
+            $table->integer('debit_batch_num_users');
+            $table->dateTime('dt_added');
+            $table->dateTime('dt_modified');
+            $table->dateTime('dt_processed')->nullable();
+            $table->tinyInteger('is_processed');
+            $table->integer('subid')->nullable();
+            $table->integer('validation_status')->nullable();
+            $table->string('report_token')->nullable();
+            $table->longText('log')->nullable();
+        });
+
+        Schema::create('debit_day_dates', function (Blueprint $table) {
+            $table->integer('debit_day_date_id', true);
+            $table->integer('debit_day_id')->nullable()->index('IDX_3EEF664F1157AE61');
+            $table->date('debit_day_date')->nullable();
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_modified')->nullable();
+            $table->tinyInteger('is_active');
+        });
+
+        Schema::create('debit_days', function (Blueprint $table) {
+            $table->integer('debit_day_id', true);
+            $table->string('debit_day_descr');
+            $table->tinyInteger('is_active');
+            $table->string('interval');
+            $table->integer('order')->nullable();
+            $table->string('import_code')->nullable();
+        });
+
+        Schema::create('debit_order_settings', function (Blueprint $table) {
+            $table->integer('debit_order_settings_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_CF3604CDD8177B3F');
+            $table->integer('debit_day_id')->nullable()->index('IDX_CF3604CD1157AE61');
+            $table->string('debit_order_invoice_date')->nullable();
+        });
+
+        Schema::create('discovery_vitality_batches', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->string('batch_number');
+            $table->string('file_path');
+            $table->integer('no_of_records');
+            $table->string('check_total');
+            $table->dateTime('sent_on')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on')->nullable();
+            $table->string('batch_type');
+        });
+
+        Schema::create('doctrine_migration_versions', function (Blueprint $table) {
+            $table->string('version', 191)->primary();
+            $table->dateTime('executed_at')->nullable();
+            $table->integer('execution_time')->nullable();
+        });
+
+        Schema::create('drop_in_packages', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('box_id')->nullable()->index('IDX_36886E59D8177B3F');
+            $table->integer('created_by')->nullable()->index('IDX_36886E59DE12AB56');
+            $table->integer('updated_by')->nullable()->index('IDX_36886E5916FE72E1');
+            $table->string('name');
+            $table->longText('description')->nullable();
+            $table->double('price');
+            $table->boolean('is_active');
+            $table->dateTime('created_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
+            $table->integer('priority')->nullable();
+        });
+
+        Schema::create('drop_in_packages_to_classes', function (Blueprint $table) {
+            $table->integer('drop_in_package_id')->index('IDX_BDCC9C874F1D441E');
+            $table->integer('class_id')->index('IDX_BDCC9C87EA000B10');
+
+            $table->primary(['drop_in_package_id', 'class_id']);
+        });
+
+        Schema::create('drop_in_packages_to_lead_members', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('lead_member_id')->index('IDX_18F992ABEC34D1C6');
+            $table->integer('drop_in_package_id')->index('IDX_18F992AB4F1D441E');
+            $table->integer('invoice_id')->nullable()->unique('UNIQ_18F992AB2989F1FD');
+            $table->integer('created_by')->nullable()->index('IDX_18F992ABDE12AB56');
+            $table->integer('updated_by')->nullable()->index('IDX_18F992AB16FE72E1');
+            $table->integer('sessions_purchased');
+            $table->integer('sessions_remaining');
+            $table->string('token')->nullable()->unique('UNIQ_18F992AB5F37A13B');
+            $table->boolean('is_confirmation_sent');
+            $table->dateTime('created_on')->nullable();
+            $table->dateTime('updated_on')->nullable();
+        });
+
+        Schema::create('exercise', function (Blueprint $table) {
+            $table->integer('exercise_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_AEDAD51CD8177B3F');
+            $table->integer('exercise_category_id')->nullable()->index('IDX_AEDAD51C5FB48D66');
+            $table->integer('measuring_unit_id')->nullable()->index('IDX_AEDAD51CDCAFB353');
+            $table->boolean('is_benchmark');
+            $table->string('exercise_name')->nullable();
+            $table->longText('exercise_desc')->nullable();
+            $table->string('rx_male')->nullable();
+            $table->string('rx_female')->nullable();
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_modified')->nullable();
+            $table->boolean('is_active');
+            $table->boolean('is_pb');
+            $table->string('resource_url')->nullable();
+        });
+
+        Schema::create('exercise_category', function (Blueprint $table) {
+            $table->integer('exercise_category_id', true);
+            $table->string('exercise_category_desc');
+            $table->boolean('is_active');
+            $table->boolean('is_benchmark')->default(false);
+
+            $table->index(['exercise_category_id', 'is_active'], 'exercise_category_id');
+        });
+
+        Schema::create('exercise_master', function (Blueprint $table) {
+            $table->integer('exercise_master_id', true);
+            $table->string('exercise_master_name');
+            $table->boolean('is_active');
+        });
+
+        Schema::create('ext_log_entries', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->string('action', 8);
+            $table->dateTime('logged_at')->index('log_date_lookup_idx');
+            $table->string('object_id', 64)->nullable();
+            $table->string('object_class', 191)->index('log_class_lookup_idx');
+            $table->integer('version');
+            $table->json('data')->nullable();
+            $table->string('username', 191)->nullable()->index('log_user_lookup_idx');
+
+            $table->index(['object_id', 'object_class', 'version'], 'log_version_lookup_idx');
+        });
+
+        Schema::create('facility_membership_discounts', function (Blueprint $table) {
+            $table->integer('facility_membership_discount_id', true);
+            $table->integer('user_to_facility_id')->nullable()->index('IDX_9A71E219E217A82A');
+            $table->integer('discount_id')->nullable()->index('IDX_9A71E2194C7C611F');
+            $table->date('starting_on')->nullable();
+            $table->date('ending_on')->nullable();
+            $table->string('status')->nullable();
+        });
+
+        Schema::create('facility_payment_gateway_settings', function (Blueprint $table) {
+            $table->integer('setting_id', true);
+            $table->integer('box_facility_payment_gateway_id')->nullable()->index('IDX_6912F067BA6C2597');
+            $table->integer('modified_id')->nullable()->index('IDX_6912F067A50BFD10');
+            $table->dateTime('modified_on')->nullable();
+            $table->string('discr');
+            $table->string('username')->nullable();
+            $table->string('password')->nullable();
+            $table->string('pin')->nullable();
+            $table->string('merchant_account_number')->nullable();
+            $table->string('debit_order_service_key')->nullable();
+            $table->string('pay_now_service_key')->nullable();
+            $table->string('account_service_key')->nullable();
+            $table->string('secret_key')->nullable();
+            $table->string('public_key')->nullable();
+            $table->string('token')->nullable();
+            $table->string('public_token')->nullable();
+            $table->boolean('for_sign_up');
+            $table->string('organisation_id')->nullable();
+            $table->boolean('disconnected_from_event')->nullable();
+            $table->string('sub_account_id')->nullable();
+            $table->string('sub_account_code')->nullable();
+        });
+
+        Schema::create('finance_discounts', function (Blueprint $table) {
+            $table->integer('discount_id', true);
+            $table->integer('created_by_id')->nullable()->index('IDX_9F803894B03A8386');
+            $table->integer('box_id')->nullable()->index('IDX_9F803894D8177B3F');
+            $table->string('name', 200);
+            $table->longText('description')->nullable();
+            $table->string('type', 200);
+            $table->decimal('amount', 10);
+            $table->string('currency');
+            $table->boolean('deleted')->nullable();
+            $table->dateTime('updated_on')->nullable();
+            $table->dateTime('created_on');
+        });
+
+        Schema::create('finance_facility_invoice_items', function (Blueprint $table) {
+            $table->integer('facility_invoice_item_id', true);
+            $table->integer('created_by_id')->nullable()->index('IDX_AAC1B500B03A8386');
+            $table->integer('facility_invoice_id')->nullable()->index('IDX_AAC1B500272F2852');
+            $table->string('code')->nullable();
+            $table->longText('description')->nullable();
+            $table->decimal('unit_price', 10);
+            $table->integer('quantity')->nullable();
+            $table->decimal('amount', 10);
+            $table->decimal('amount_in_rands', 10)->nullable();
+            $table->boolean('deleted')->nullable();
+            $table->dateTime('updated_on');
+            $table->dateTime('created_on');
+            $table->string('discriminator');
+        });
+
+        Schema::create('finance_facility_invoices', function (Blueprint $table) {
+            $table->integer('facility_invoice_id', true);
+            $table->integer('created_by_id')->nullable()->index('IDX_4F4F3A15B03A8386');
+            $table->integer('box_facility_id')->nullable()->index('IDX_4F4F3A1585BC5E22');
+            $table->integer('parent_invoice_id')->nullable()->unique('UNIQ_4F4F3A156ECA75AD');
+            $table->string('code');
+            $table->longText('description')->nullable();
+            $table->decimal('amount', 10);
+            $table->decimal('amount_in_rands', 10)->nullable();
+            $table->string('type')->nullable();
+            $table->dateTime('due_on');
+            $table->dateTime('period_start');
+            $table->dateTime('period_end');
+            $table->string('status')->nullable();
+            $table->integer('deleted')->nullable();
+            $table->dateTime('sent_on')->nullable();
+            $table->dateTime('updated_on');
+            $table->dateTime('created_on');
+            $table->longText('note')->nullable();
+        });
+
+        Schema::create('finance_facility_payments', function (Blueprint $table) {
+            $table->integer('box_payment_id', true);
+            $table->integer('created_by_id')->nullable()->index('IDX_40B28EB2B03A8386');
+            $table->integer('box_facility_id')->nullable()->index('IDX_40B28EB285BC5E22');
+            $table->integer('facility_invoice_id')->nullable()->index('IDX_40B28EB2272F2852');
+            $table->string('type');
+            $table->decimal('amount', 10);
+            $table->string('reference')->nullable();
+            $table->longText('notes')->nullable();
+            $table->string('status')->nullable();
+            $table->dateTime('date_paid')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on')->nullable();
+            $table->boolean('deleted')->nullable();
+        });
+
+        Schema::create('finance_invoice_items', function (Blueprint $table) {
+            $table->integer('invoice_item_id', true);
+            $table->integer('invoice_id')->nullable()->index('IDX_51EAA022989F1FD');
+            $table->integer('created_by_id')->nullable()->index('IDX_51EAA02B03A8386');
+            $table->string('code')->nullable();
+            $table->longText('description')->nullable();
+            $table->decimal('amount', 10);
+            $table->boolean('deleted')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on')->nullable();
+            $table->decimal('unitPrice', 10);
+            $table->integer('quantity')->nullable();
+            $table->string('discriminator');
+            $table->integer('user_to_package_id')->nullable()->index('IDX_51EAA023DF1E4D2');
+        });
+
+        Schema::create('finance_invoices', function (Blueprint $table) {
+            $table->integer('invoice_id', true);
+            $table->integer('user_to_facility_id')->nullable()->index('IDX_BB79DA88E217A82A');
+            $table->string('code');
+            $table->longText('description')->nullable();
+            $table->decimal('amount', 10);
+            $table->string('type')->nullable();
+            $table->dateTime('due_on');
+            $table->string('status')->nullable();
+            $table->string('currency');
+            $table->boolean('deleted')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on');
+            $table->integer('user_to_package_id')->nullable()->index('IDX_BB79DA883DF1E4D2');
+            $table->dateTime('sent_on')->nullable();
+            $table->dateTime('period_start')->nullable();
+            $table->dateTime('period_end')->nullable();
+            $table->longText('note')->nullable();
+            $table->integer('upfront_user_id')->nullable()->index('IDX_BB79DA887949E708');
+            $table->integer('parent_invoice_id')->nullable()->index('IDX_BB79DA886ECA75AD');
+            $table->longText('gateway_payment_id')->nullable();
+            $table->longText('gateway_notes')->nullable();
+            $table->integer('facility_to_payment_gateway_id')->nullable()->index('IDX_BB79DA887359B9E4');
+            $table->integer('box_facility_id')->nullable()->index('IDX_BB79DA8885BC5E22');
+            $table->string('non_member_name')->nullable();
+            $table->string('non_member_email')->nullable();
+            $table->integer('lead_member_id')->nullable()->index('lead_member_id');
+            $table->string('discriminator')->nullable();
+            $table->string('last_status_change_reason')->nullable();
+            $table->integer('created_by_id')->nullable()->index('IDX_BB79DA88B03A8386');
+            $table->integer('updated_by_id')->nullable()->index('IDX_BB79DA88896DBBDE');
+        });
+
+        Schema::create('finance_payment_gateways', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('box_facility_id')->nullable()->index('IDX_24DC939485BC5E22');
+            $table->integer('deleted');
+            $table->integer('cancelled');
+            $table->integer('error_state');
+            $table->string('error_message');
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on');
+            $table->string('gateway');
+            $table->string('payfast_merchant_id')->nullable();
+            $table->string('payfast_merchant_key')->nullable();
+            $table->string('payfast_merchant_passphrase')->nullable();
+            $table->string('payfast_subscription_id')->nullable();
+            $table->string('gocardless_merchant_id')->nullable();
+            $table->string('gocardless_merchant_key')->nullable();
+            $table->string('gocardless_merchant_passphrase')->nullable();
+            $table->string('gocardless_organization_id')->nullable();
+            $table->string('gocardless_oauth_token')->nullable();
+        });
+
+        Schema::create('finance_payments', function (Blueprint $table) {
+            $table->integer('payment_id', true);
+            $table->integer('invoice_id')->nullable()->index('IDX_B4846E2F2989F1FD');
+            $table->integer('user_to_facility_id')->nullable()->index('IDX_B4846E2FE217A82A');
+            $table->decimal('amount', 10);
+            $table->string('currency');
+            $table->string('reference')->nullable();
+            $table->dateTime('date_time')->nullable();
+            $table->longText('notes')->nullable();
+            $table->boolean('deleted');
+            $table->integer('created_by_id')->nullable()->index('IDX_B4846E2FB03A8386');
+            $table->dateTime('updated_on')->nullable();
+            $table->dateTime('created_on');
+            $table->string('type');
+        });
+
+        Schema::create('finance_top_ups', function (Blueprint $table) {
+            $table->integer('top_up_id', true);
+            $table->integer('created_by_id')->nullable()->index('IDX_4FCE769DB03A8386');
+            $table->integer('updated_by_id')->nullable()->index('IDX_4FCE769D896DBBDE');
+            $table->integer('invoice_id')->nullable()->unique('UNIQ_4FCE769D2989F1FD');
+            $table->integer('user_to_package_id')->nullable()->index('IDX_4FCE769D3DF1E4D2');
+            $table->integer('number_of_sessions');
+            $table->boolean('deleted')->nullable();
+            $table->dateTime('updated_on')->nullable();
+            $table->dateTime('created_on');
+            $table->boolean('released');
+        });
+
+        Schema::create('finance_user_gocardless_credentials', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('user_id')->index('IDX_360A919BA76ED395');
+            $table->string('redirect_flow_id')->nullable();
+            $table->string('redirect_url')->nullable();
+            $table->string('mandate')->nullable();
+            $table->string('customer')->nullable();
+            $table->string('note')->nullable();
+            $table->string('status')->nullable();
+            $table->date('date_created')->nullable();
+        });
+
+        Schema::create('finances_invoice_item_types', function (Blueprint $table) {
+            $table->integer('invoice_item_type_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_BBBF483FD8177B3F');
+            $table->string('name');
+        });
+
+        Schema::create('gender', function (Blueprint $table) {
+            $table->integer('gender_id', true);
+            $table->string('gender_desc');
+        });
+
+        Schema::create('go_cardless_mandates', function (Blueprint $table) {
+            $table->integer('mandate_id', true);
+            $table->integer('facility_payment_gateway_id')->nullable()->index('IDX_CD406C135FCAF0F1');
+            $table->integer('user_id')->nullable()->index('IDX_CD406C13A76ED395');
+            $table->integer('box_id')->nullable()->index('IDX_CD406C13D8177B3F');
+            $table->integer('lead_member_id')->nullable()->index('IDX_CD406C13EC34D1C6');
+            $table->string('status');
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at');
+            $table->dateTime('cancelled_at')->nullable();
+            $table->string('mandate')->nullable();
+            $table->string('customer')->nullable();
+            $table->longText('cancel_reason')->nullable();
+            $table->string('redirect_flow_id')->nullable();
+            $table->longText('note')->nullable();
+        });
+
+        Schema::create('go_cardless_webhook_events', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('organisation_id');
+            $table->string('status');
+            $table->dateTime('created_at');
+            $table->dateTime('published_at');
+            $table->dateTime('last_processed_at')->nullable();
+            $table->integer('processed_count')->default(0);
+            $table->json('errors')->nullable();
+            $table->json('payload')->nullable();
+        });
+
+        Schema::create('health_providers', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->string('name');
+            $table->boolean('is_active');
+        });
+
+        Schema::create('injury_injuries', function (Blueprint $table) {
+            $table->integer('injury_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_F6A3E2EED8177B3F');
+            $table->integer('created_for_id')->nullable()->index('IDX_F6A3E2EE2F97E6E2');
+            $table->integer('created_by_id')->nullable()->index('IDX_F6A3E2EEB03A8386');
+            $table->integer('updated_by_id')->nullable()->index('IDX_F6A3E2EE896DBBDE');
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on')->nullable();
+            $table->string('status');
+            $table->integer('box_facility_id')->nullable()->index('IDX_F6A3E2EE85BC5E22');
+        });
+
+        Schema::create('injury_updates', function (Blueprint $table) {
+            $table->integer('updated_id', true);
+            $table->integer('created_by_id')->nullable()->index('IDX_B0ABA897B03A8386');
+            $table->integer('injury_id')->nullable()->index('IDX_B0ABA897ABA45E9A');
+            $table->dateTime('created_on');
+            $table->boolean('deleted');
+            $table->longText('content');
+        });
+
+        Schema::create('lead_members', function (Blueprint $table) {
+            $table->integer('member_id', true);
+            $table->integer('captured_by_id')->nullable()->index('IDX_1C6E8E9120097EF6');
+            $table->integer('referred_by_id')->nullable()->index('IDX_1C6E8E91758C8114');
+            $table->integer('waiver_id')->nullable()->index('IDX_1C6E8E91A43B7175');
+            $table->integer('box_facility_id')->nullable()->index('IDX_1C6E8E9185BC5E22');
+            $table->string('first_name', 100);
+            $table->string('last_name', 100);
+            $table->string('gender', 1);
+            $table->date('date_of_birth')->nullable();
+            $table->string('mobile_number', 30)->nullable();
+            $table->string('email_address', 60);
+            $table->string('status', 60);
+            $table->dateTime('updated_on')->nullable();
+            $table->dateTime('created_on');
+            $table->longText('notes')->nullable();
+            $table->dateTime('converted_on')->nullable();
+            $table->string('type', 60);
+            $table->date('last_contacted_date')->nullable();
+            $table->date('next_follow_up_date')->nullable();
+            $table->string('source')->nullable();
+            $table->boolean('deleted');
+        });
+
+        Schema::create('lead_settings', function (Blueprint $table) {
+            $table->integer('setting_id', true);
+            $table->integer('box_id')->nullable()->unique('UNIQ_4F1622C6D8177B3F');
+            $table->integer('box_facility_id')->nullable()->unique('UNIQ_4F1622C685BC5E22');
+            $table->integer('waiver_id')->nullable()->index('IDX_4F1622C6A43B7175');
+            $table->string('hash');
+        });
+
+        Schema::create('lead_waivers', function (Blueprint $table) {
+            $table->integer('waiver_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_6EAA690FA76ED395');
+            $table->integer('parent_id')->nullable()->index('IDX_6EAA690F727ACA70');
+            $table->integer('box_facility_id')->nullable()->index('IDX_6EAA690F85BC5E22');
+            $table->boolean('digital');
+            $table->longText('digital_terms_and_conditions')->nullable();
+            $table->string('status');
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on');
+            $table->dateTime('signed_on')->nullable();
+            $table->string('file_path')->nullable();
+            $table->string('file_mime')->nullable();
+            $table->string('file_name')->nullable();
+            $table->string('ip_address')->nullable();
+        });
+
+        Schema::create('leaderboard', function (Blueprint $table) {
+            $table->integer('leaderboard_id', true);
+            $table->integer('exercise_id')->nullable()->index('IDX_182E5253E934951A');
+            $table->integer('user_id')->nullable()->index('IDX_182E5253A76ED395');
+            $table->string('score');
+            $table->integer('rank')->nullable();
+            $table->dateTime('created_at')->nullable();
+            $table->boolean('is_active');
+            $table->dateTime('updated_at')->nullable();
+        });
+
+        Schema::create('measuring_units', function (Blueprint $table) {
+            $table->integer('measuring_unit_id', true);
+            $table->string('measuring_unit_short');
+            $table->string('measuring_unit_desc');
+            $table->boolean('is_active');
+            $table->string('measuring_unit_format');
+
+            $table->index(['measuring_unit_id', 'is_active'], 'measuring_unit_id');
+        });
+
+        Schema::create('messenger_messages', function (Blueprint $table) {
+            $table->bigInteger('id', true);
+            $table->longText('body');
+            $table->longText('headers');
+            $table->string('queue_name', 190)->index('IDX_75EA56E0FB7336F0');
+            $table->dateTime('created_at');
+            $table->dateTime('available_at')->index('IDX_75EA56E0E3BD61CE');
+            $table->dateTime('delivered_at')->nullable()->index('IDX_75EA56E016BA31DB');
+        });
+
+        Schema::create('movement_scheme', function (Blueprint $table) {
+            $table->integer('movement_scheme_id', true);
+            $table->string('movement_scheme_name');
+            $table->dateTime('dt_added');
+            $table->dateTime('dt_modified');
+            $table->tinyInteger('is_active');
+        });
+
+        Schema::create('own_benchmarks', function (Blueprint $table) {
+            $table->integer('own_benchmark_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_4466DA1EA76ED395');
+            $table->integer('exercise_id')->nullable()->index('exercise_id');
+            $table->string('score');
+            $table->boolean('is_rx');
+            $table->boolean('is_verified');
+            $table->integer('verifier_id')->nullable()->index('IDX_4466DA1E95561DEE');
+            $table->dateTime('dt_verified')->nullable();
+            $table->date('own_benchmark_date');
+            $table->dateTime('created_on');
+            $table->boolean('is_active');
+            $table->longText('note')->nullable();
+            $table->dateTime('updated_on')->nullable();
+        });
+
+        Schema::create('package_limit_types', function (Blueprint $table) {
+            $table->integer('package_limit_type_id', true);
+            $table->string('package_limit_type_descr');
+            $table->tinyInteger('is_active');
+        });
+
+        Schema::create('package_to_box_facility', function (Blueprint $table) {
+            $table->integer('package_id')->index('IDX_1DEED96AF44CABFF');
+            $table->integer('box_facility_id')->index('IDX_1DEED96A85BC5E22');
+
+            $table->primary(['package_id', 'box_facility_id']);
+        });
+
+        Schema::create('packages', function (Blueprint $table) {
+            $table->integer('package_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_9BB5C0A7D8177B3F');
+            $table->integer('package_limit_type_id')->nullable()->index('IDX_9BB5C0A72FD85FE5');
+            $table->string('package_name');
+            $table->integer('package_limit');
+            $table->longText('package_descr')->nullable();
+            $table->float('package_price', 10, 0);
+            $table->dateTime('dt_added');
+            $table->dateTime('dt_modified')->nullable();
+            $table->boolean('is_active');
+            $table->boolean('is_displayed');
+            $table->double('package_topup_price')->nullable();
+            $table->integer('topup_stock_item_id')->nullable()->unique('UNIQ_9BB5C0A7E8EF0847');
+            $table->integer('default_period_in_months')->nullable();
+            $table->boolean('is_display_on_buy_packages');
+            $table->string('default_period_interval')->nullable();
+            $table->integer('priority')->nullable();
+            $table->integer('is_hidden')->nullable();
+        });
+
+        Schema::create('payment_gateways', function (Blueprint $table) {
+            $table->integer('payment_gateway_id', true);
+            $table->string('payment_gateway_name', 50);
+            $table->tinyInteger('is_active');
+        });
+
+        Schema::create('personal_wod', function (Blueprint $table) {
+            $table->integer('class_type_id', true);
+            $table->integer('measuring_unit_id')->nullable()->index('IDX_62CCA740DCAFB353');
+            $table->integer('user_id')->nullable()->index('IDX_62CCA740A76ED395');
+            $table->string('name');
+            $table->dateTime('updated_on');
+            $table->dateTime('created_on');
+            $table->boolean('is_rx')->nullable();
+            $table->string('score', 5)->nullable();
+            $table->boolean('deleted')->nullable();
+            $table->longText('description')->nullable();
+            $table->integer('box_id')->nullable()->index('IDX_62CCA740D8177B3F');
+            $table->date('date')->nullable();
+            $table->longText('note')->nullable();
+        });
+
+        Schema::create('pos_sale_items', function (Blueprint $table) {
+            $table->integer('sale_item_id', true);
+            $table->integer('stock_item_id')->nullable()->index('IDX_788D66B7BC942FD');
+            $table->integer('sale_id')->nullable()->index('IDX_788D66B74A7E4868');
+            $table->integer('quantity');
+            $table->dateTime('sessions_released_on')->nullable();
+            $table->integer('sessions_released_by_id')->nullable()->index('IDX_788D66B7171FFC92');
+        });
+
+        Schema::create('pos_sales', function (Blueprint $table) {
+            $table->integer('sale_id', true);
+            $table->integer('invoice_id')->nullable()->index('IDX_929A92A12989F1FD');
+            $table->integer('purchaser_id')->nullable()->index('IDX_929A92A1ED255ED6');
+            $table->integer('seller_id')->nullable()->index('IDX_929A92A18DE820D9');
+            $table->integer('box_facility_id')->nullable()->index('IDX_929A92A185BC5E22');
+            $table->string('purchaser_name')->nullable();
+            $table->string('purchaser_contact_number')->nullable();
+            $table->string('purchaser_email')->nullable();
+            $table->dateTime('sold_on')->nullable();
+            $table->dateTime('created_on');
+            $table->string('status');
+            $table->boolean('deleted');
+            $table->longText('note')->nullable();
+            $table->double('discount_amount')->nullable();
+            $table->string('otp')->nullable();
+            $table->boolean('otp_verified');
+        });
+
+        Schema::create('pos_stock_items', function (Blueprint $table) {
+            $table->integer('stock_item_id', true);
+            $table->integer('created_by_id')->nullable()->index('IDX_549E73F3B03A8386');
+            $table->integer('box_facility_id')->nullable()->index('IDX_549E73F385BC5E22');
+            $table->string('name');
+            $table->double('cost_price');
+            $table->double('selling_price');
+            $table->string('sku')->nullable();
+            $table->integer('stock_level')->nullable();
+            $table->longText('description')->nullable();
+            $table->string('image_url')->nullable();
+            $table->string('category');
+            $table->dateTime('created_on');
+            $table->boolean('deleted');
+            $table->double('vat')->nullable();
+        });
+
+        Schema::create('programme_package_visibilities', function (Blueprint $table) {
+            $table->integer('package_id')->index('IDX_E1B1D465F44CABFF');
+            $table->integer('programme_id')->index('IDX_E1B1D46562BB7AEE');
+
+            $table->primary(['package_id', 'programme_id']);
+        });
+
+        Schema::create('programmes', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('box_id')->nullable()->index('IDX_3631FC3FD8177B3F');
+            $table->integer('created_by_id')->nullable()->index('IDX_3631FC3FB03A8386');
+            $table->string('name', 200);
+            $table->longText('description')->nullable();
+            $table->boolean('is_active');
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on')->nullable();
+        });
+
+        Schema::create('refresh_tokens', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->string('refresh_token', 128)->unique('UNIQ_9BACE7E1C74F2195');
+            $table->string('username');
+            $table->dateTime('valid');
+        });
+
+        Schema::create('regions', function (Blueprint $table) {
+            $table->integer('region_id', true);
+            $table->string('region_desc');
+            $table->boolean('is_active');
+        });
+
+        Schema::create('regions_to_currencies', function (Blueprint $table) {
+            $table->integer('region_id')->index('IDX_62606DDE98260155');
+            $table->integer('currency_id')->index('IDX_62606DDE38248176');
+
+            $table->primary(['region_id', 'currency_id']);
+        });
+
+        Schema::create('regions_to_timezones', function (Blueprint $table) {
+            $table->integer('region_id')->index('IDX_D45FAAE998260155');
+            $table->integer('timezone_id')->index('IDX_D45FAAE93FE997DE');
+
+            $table->primary(['region_id', 'timezone_id']);
+        });
+
+        Schema::create('remote_config', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->string('maintenance_title')->nullable();
+            $table->string('maintenance_body')->nullable();
+            $table->string('version_web_app');
+            $table->string('version_web_app_required');
+            $table->string('version_app_store_ios');
+            $table->string('version_app_store_ios_required');
+            $table->string('version_app_store_android');
+            $table->string('version_app_store_android_required');
+            $table->dateTime('updated_on')->nullable();
+        });
+
+        Schema::create('saved_push_notifications', function (Blueprint $table) {
+            $table->integer('push_notification_id', true);
+            $table->integer('user_to_facility_id')->nullable()->index('IDX_F78342E5E217A82A');
+            $table->longText('message');
+            $table->dateTime('received_on');
+            $table->boolean('is_read');
+            $table->string('title');
+        });
+
+        Schema::create('scheduled_email_attachments', function (Blueprint $table) {
+            $table->integer('scheduled_email_attachment_id', true);
+            $table->integer('scheduled_email_id')->nullable()->index('IDX_C8873F9FD9E78316');
+            $table->string('file_name');
+            $table->string('path');
+            $table->string('type');
+            $table->boolean('temporary');
+        });
+
+        Schema::create('scheduled_emails', function (Blueprint $table) {
+            $table->integer('scheduled_email_id', true);
+            $table->integer('box_facility_id')->nullable()->index('IDX_E07F6C4B85BC5E22');
+            $table->integer('box_id')->nullable()->index('IDX_E07F6C4BD8177B3F');
+            $table->integer('notification_id')->nullable()->index('IDX_E07F6C4BEF1A9D84');
+            $table->integer('mailer_id')->nullable()->index('IDX_E07F6C4B3F989867');
+            $table->dateTime('createdOn');
+            $table->string('subject', 1024);
+            $table->longText('content');
+            $table->string('to');
+            $table->json('cc')->nullable();
+            $table->string('from');
+            $table->string('reply_to')->nullable();
+            $table->dateTime('scheduled_for')->nullable();
+            $table->dateTime('sent_at')->nullable();
+            $table->string('status');
+            $table->longText('status_reason')->nullable();
+            $table->integer('failed_attempts')->nullable();
+        });
+
+        Schema::create('scheduled_push', function (Blueprint $table) {
+            $table->integer('scheduled_push_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_90FB514DA76ED395');
+            $table->integer('box_facility_id')->nullable()->index('IDX_90FB514D85BC5E22');
+            $table->integer('box_id')->nullable()->index('IDX_90FB514DD8177B3F');
+            $table->integer('notification_id')->nullable()->index('IDX_90FB514DEF1A9D84');
+            $table->integer('mailer_id')->nullable()->index('IDX_90FB514D3F989867');
+            $table->dateTime('createdOn');
+            $table->longText('content');
+            $table->string('mobile');
+            $table->dateTime('scheduled_for')->nullable();
+            $table->dateTime('sent_at')->nullable();
+            $table->string('status');
+            $table->string('status_reason')->nullable();
+            $table->string('title');
+            $table->dateTime('updated_at')->nullable();
+        });
+
+        Schema::create('scheduled_smses', function (Blueprint $table) {
+            $table->integer('scheduled_sms_id', true);
+            $table->integer('box_facility_id')->nullable()->index('IDX_7450729A85BC5E22');
+            $table->integer('box_id')->nullable()->index('IDX_7450729AD8177B3F');
+            $table->integer('notification_id')->nullable()->index('IDX_7450729AEF1A9D84');
+            $table->integer('mailer_id')->nullable()->index('IDX_7450729A3F989867');
+            $table->dateTime('createdOn');
+            $table->longText('content');
+            $table->string('mobile');
+            $table->dateTime('scheduled_for')->nullable();
+            $table->dateTime('sent_at')->nullable();
+            $table->string('status');
+            $table->string('status_reason')->nullable();
+            $table->dateTime('updated_at')->nullable();
+        });
+
+        Schema::create('scheduled_user_actions', function (Blueprint $table) {
+            $table->integer('task_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_8B216F74A76ED395');
+            $table->integer('box_id')->nullable()->index('IDX_8B216F74D8177B3F');
+            $table->string('status', 200);
+            $table->string('action', 200);
+            $table->dateTime('date');
+            $table->dateTime('updated_on')->nullable();
+            $table->dateTime('created_on');
+            $table->longText('on_hold_note')->nullable();
+            $table->double('on_hold_pro_rata_fee')->nullable();
+            $table->dateTime('on_hold_release_date')->nullable();
+            $table->boolean('exclude_from_future_batches');
+            $table->integer('failed_attempts')->default(0);
+            $table->date('last_debit_date')->nullable();
+            $table->boolean('extend_package_end_date');
+        });
+
+        Schema::create('special_rates', function (Blueprint $table) {
+            $table->integer('special_rate_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_E8EA057DA76ED395');
+            $table->integer('box_id')->nullable()->index('IDX_E8EA057DD8177B3F');
+            $table->float('amount', 10, 0);
+            $table->dateTime('dt_added');
+            $table->dateTime('dt_modified')->nullable();
+            $table->tinyInteger('is_active');
+        });
+
+        Schema::create('stripe_mandates', function (Blueprint $table) {
+            $table->integer('mandate_id', true);
+            $table->integer('facility_payment_gateway_id')->nullable()->index('IDX_1E2A1485FCAF0F1');
+            $table->integer('user_id')->nullable()->index('IDX_1E2A148A76ED395');
+            $table->integer('lead_member_id')->nullable()->index('IDX_1E2A148EC34D1C6');
+            $table->string('status');
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at');
+            $table->dateTime('cancelled_at')->nullable();
+            $table->string('mandate')->nullable();
+            $table->string('customer')->nullable();
+            $table->string('bank_account')->nullable();
+            $table->dateTime('bank_account_verified_at')->nullable();
+            $table->string('cancel_reason')->nullable();
+            $table->string('last_status_change_reason')->nullable();
+        });
+
+        Schema::create('stripe_webhook_events', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('status');
+            $table->dateTime('created_at');
+            $table->dateTime('published_at');
+            $table->dateTime('last_processed_at');
+            $table->integer('processed_count')->default(0);
+            $table->json('errors')->nullable();
+            $table->json('payload')->nullable();
+        });
+
+        Schema::create('taggables', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('tag_id')->nullable()->index('IDX_A9D1878EBAD26311');
+            $table->integer('created_by_id')->nullable()->index('IDX_A9D1878EB03A8386');
+            $table->integer('updated_by_id')->nullable()->index('IDX_A9D1878E896DBBDE');
+            $table->integer('morphable_id');
+            $table->string('morphable_model');
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at');
+            $table->dateTime('deleted_at')->nullable();
+        });
+
+        Schema::create('tags', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('created_by_id')->nullable()->index('IDX_6FBC9426B03A8386');
+            $table->integer('updated_by_id')->nullable()->index('IDX_6FBC9426896DBBDE');
+            $table->string('name');
+            $table->string('type');
+            $table->integer('owner_model_id')->nullable();
+            $table->string('owner_model')->nullable();
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at');
+            $table->dateTime('deleted_at')->nullable();
+        });
+
+        Schema::create('task_assignees', function (Blueprint $table) {
+            $table->integer('task_assignment_id', true);
+            $table->integer('task_id')->nullable()->index('IDX_6DEED38D8DB60186');
+            $table->integer('user_id')->nullable()->index('IDX_6DEED38DA76ED395');
+        });
+
+        Schema::create('task_tasks', function (Blueprint $table) {
+            $table->integer('task_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_97FC7EB7D8177B3F');
+            $table->integer('box_facility_id')->nullable()->index('IDX_97FC7EB785BC5E22');
+            $table->string('summary', 200);
+            $table->longText('description')->nullable();
+            $table->dateTime('due_date')->nullable();
+            $table->boolean('is_completed');
+            $table->integer('created_by_id')->nullable()->index('IDX_97FC7EB7B03A8386');
+            $table->integer('updated_by_id')->nullable()->index('IDX_97FC7EB7896DBBDE');
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on');
+        });
+
+        Schema::create('terms_and_conditions', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->longText('content');
+            $table->dateTime('created_on');
+            $table->dateTime('released_on')->nullable();
+        });
+
+        Schema::create('terms_of_use', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->longText('content');
+            $table->dateTime('created_on');
+            $table->dateTime('released_on')->nullable();
+        });
+
+        Schema::create('timezones', function (Blueprint $table) {
+            $table->integer('timezone_id', true);
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->string('abbr')->nullable();
+            $table->string('zone');
+            $table->string('offset');
+            $table->boolean('is_daylight_saving');
+        });
+
+        Schema::create('user_access_privileges', function (Blueprint $table) {
+            $table->integer('user_access_privilege_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_BA74DAB8A76ED395');
+            $table->integer('box_id')->nullable()->index('IDX_BA74DAB8D8177B3F');
+            $table->integer('access_privilege_id')->nullable()->index('IDX_BA74DAB8EEB712A8');
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on')->nullable();
+            $table->dateTime('revoked_on')->nullable();
+            $table->boolean('revoked')->nullable();
+        });
+
+        Schema::create('user_banking_details', function (Blueprint $table) {
+            $table->integer('user_banking_details_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_2C49AE20A76ED395');
+            $table->integer('box_id')->nullable()->index('IDX_2C49AE20D8177B3F');
+            $table->integer('bank_id')->nullable()->index('IDX_2C49AE2011C8FB41');
+            $table->integer('account_type_id')->nullable()->index('IDX_2C49AE20C6798DB');
+            $table->integer('debit_day_id')->nullable()->index('IDX_2C49AE201157AE61');
+            $table->string('account_no', 50)->nullable();
+            $table->string('account_name', 100)->nullable();
+            $table->longText('waiver')->nullable();
+            $table->dateTime('dt_added');
+            $table->dateTime('dt_modified')->nullable();
+            $table->boolean('is_active');
+            $table->string('bank_other', 128)->nullable();
+            $table->string('branch_code')->nullable();
+        });
+
+        Schema::create('user_contracts', function (Blueprint $table) {
+            $table->integer('user_contract_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_9B02497A76ED395');
+            $table->integer('box_id')->nullable()->index('IDX_9B02497D8177B3F');
+            $table->integer('box_facility_id')->nullable()->index('IDX_9B0249785BC5E22');
+            $table->date('starting_on');
+            $table->date('ending_on')->nullable();
+            $table->string('file_path')->nullable();
+            $table->string('file_mime')->nullable();
+            $table->string('file_name')->nullable();
+            $table->longText('contract_terms_and_conditions')->nullable();
+            $table->date('accepted_on')->nullable();
+            $table->boolean('accepted')->nullable();
+            $table->date('sent_on')->nullable();
+            $table->boolean('sent')->nullable();
+            $table->string('ip_address')->nullable();
+        });
+
+        Schema::create('user_debit_status', function (Blueprint $table) {
+            $table->integer('user_debit_status_id', true);
+            $table->string('user_debit_status_descr');
+            $table->boolean('is_active');
+        });
+
+        Schema::create('user_facility_access_privileges', function (Blueprint $table) {
+            $table->integer('user_facility_access_privilege_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_3A6E332AA76ED395');
+            $table->integer('box_facility_id')->nullable()->index('IDX_3A6E332A85BC5E22');
+            $table->dateTime('created_on');
+            $table->dateTime('updated_on');
+            $table->dateTime('revoked_on')->nullable();
+            $table->boolean('revoked');
+        });
+
+        Schema::create('user_login_attempts', function (Blueprint $table) {
+            $table->integer('user_login_attempt_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_FAE618A2A76ED395');
+            $table->string('ip_address');
+            $table->string('user_agent');
+            $table->dateTime('created_on');
+            $table->boolean('success');
+        });
+
+        Schema::create('user_status', function (Blueprint $table) {
+            $table->integer('user_status_id', true);
+            $table->string('user_status_desc');
+        });
+
+        Schema::create('user_to_batch', function (Blueprint $table) {
+            $table->integer('user_to_batch_id', true);
+            $table->integer('user_id')->index('IDX_13BA87E4A76ED395');
+            $table->integer('debit_batch_id')->nullable()->index('IDX_13BA87E47C1380C4');
+            $table->float('amount_editable', 10, 0);
+            $table->longText('user_note')->nullable();
+            $table->dateTime('dt_added');
+            $table->dateTime('dt_modified');
+            $table->boolean('is_active');
+            $table->integer('invoice_id')->nullable()->index('invoice_id');
+            $table->boolean('manually_added');
+
+            $table->unique(['invoice_id'], 'UNIQ_13BA87E42989F1FD');
+        });
+
+        Schema::create('user_to_box', function (Blueprint $table) {
+            $table->integer('user_to_box_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_3BC79B09A76ED395');
+            $table->integer('box_id')->nullable()->index('IDX_3BC79B09D8177B3F');
+            $table->date('effective_date');
+            $table->date('end_date');
+            $table->integer('user_type_id')->nullable()->index('IDX_3BC79B099D419299');
+            $table->integer('user_status_id')->nullable()->index('IDX_3BC79B096B178D59');
+            $table->integer('user_debit_status_id')->nullable()->index('IDX_3BC79B09557D7F87');
+            $table->integer('programme_id')->nullable()->index('IDX_3BC79B0962BB7AEE');
+            $table->integer('default_box_facility_id')->nullable()->index('IDX_3BC79B091DEAF6FE');
+            $table->integer('region_id')->nullable()->index('IDX_3BC79B0998260155');
+            $table->integer('assigned_coach_utb_id')->nullable()->index('IDX_3BC79B09D7605335');
+            $table->string('member_id')->nullable();
+            $table->longText('bio')->nullable();
+            $table->longText('notes')->nullable();
+            $table->boolean('high_risk');
+            $table->dateTime('go_cardless_link_sent_on')->nullable();
+            $table->dateTime('stripe_bank_account_invitation_sent_on')->nullable();
+            $table->string('auto_invoicing_day', 30)->nullable();
+            $table->string('auto_invoicing_due_day', 30)->nullable();
+            $table->date('up_front_payment_end_date')->nullable();
+            $table->string('landing_screen', 24)->nullable();
+            $table->dateTime('activated_on')->nullable();
+            $table->dateTime('deactivated_on')->nullable();
+            $table->dateTime('created_on')->nullable();
+            $table->dateTime('updated_on')->nullable();
+            $table->boolean('deleted');
+        });
+
+        Schema::create('user_to_facility', function (Blueprint $table) {
+            $table->integer('user_to_facility_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_741BC389A76ED395');
+            $table->integer('box_facility_id')->nullable()->index('IDX_741BC38985BC5E22');
+            $table->date('effective_date');
+            $table->date('end_date');
+        });
+
+        Schema::create('user_to_package', function (Blueprint $table) {
+            $table->integer('user_to_package_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_F7979C8CA76ED395');
+            $table->integer('package_id')->nullable()->index('IDX_F7979C8CF44CABFF');
+            $table->date('effective_date');
+            $table->date('end_date')->nullable();
+            $table->integer('sessions_available')->nullable();
+            $table->dateTime('sessions_expire')->nullable();
+            $table->boolean('deleted')->default(false);
+            $table->string('notes')->nullable();
+        });
+
+        Schema::create('user_types', function (Blueprint $table) {
+            $table->integer('user_type_id', true);
+            $table->string('user_type_desc');
+        });
+
+        Schema::create('users', function (Blueprint $table) {
+            $table->integer('user_id', true);
+            $table->integer('user_type_id')->nullable()->index('IDX_1483A5E99D419299');
+            $table->integer('gender_id')->nullable()->index('IDX_1483A5E9708A0E0');
+            $table->integer('user_status_id')->nullable()->index('IDX_1483A5E96B178D59');
+            $table->integer('user_debit_status_id')->nullable()->index('IDX_1483A5E9557D7F87');
+            $table->string('name');
+            $table->string('surname');
+            $table->longText('bio')->nullable();
+            $table->string('email')->index('idx_users_email');
+            $table->string('password');
+            $table->string('mobile', 30)->nullable();
+            $table->longText('medical_condition')->nullable();
+            $table->longText('injuries')->nullable();
+            $table->string('emergency_contact_name')->nullable();
+            $table->string('emergency_contact_mobile')->nullable();
+            $table->string('profilepic')->nullable();
+            $table->date('dob')->nullable();
+            $table->dateTime('created_on');
+            $table->dateTime('activated_on')->nullable();
+            $table->dateTime('updated_on')->nullable();
+            $table->integer('linked_user_id')->nullable()->unique('UNIQ_1483A5E9CC26EB02');
+            $table->longText('notes')->nullable();
+            $table->dateTime('last_locked_on')->nullable();
+            $table->boolean('locked');
+            $table->dateTime('last_login_on')->nullable();
+            $table->integer('user_login_attempt_id')->nullable()->index('IDX_1483A5E9133640F');
+            $table->string('password_reset_token')->nullable();
+            $table->date('up_front_payment_end_Date')->nullable();
+            $table->string('id_number')->nullable();
+            $table->string('landing_screen', 24)->nullable();
+            $table->integer('coach_box_facility_id')->nullable()->index('IDX_1483A5E93AA24A20');
+            $table->integer('region_id')->nullable()->index('IDX_1483A5E998260155');
+            $table->string('push_notification_token')->nullable();
+            $table->boolean('high_risk');
+            $table->dateTime('go_cardless_link_sent_on')->nullable();
+            $table->dateTime('stripe_bank_account_invitation_sent_on')->nullable();
+            $table->string('auto_invoicing_day', 30)->nullable();
+            $table->string('auto_invoicing_due_day', 30)->nullable();
+            $table->boolean('terms_and_conditions_accepted');
+            $table->dateTime('terms_and_conditions_accepted_on')->nullable();
+            $table->string('measure_preference');
+            $table->string('member_id', 30)->nullable();
+            $table->boolean('deleted');
+            $table->integer('assigned_coach_id')->nullable()->index('IDX_1483A5E9411D5098');
+            $table->string('linked_account_uuid', 50)->nullable();
+            $table->json('roles');
+            $table->integer('health_provider_id')->nullable()->index('IDX_1483A5E98200BD4');
+            $table->dateTime('deactivated_on')->nullable();
+            $table->integer('programme_id')->nullable()->index('IDX_1483A5E962BB7AEE');
+            $table->integer('primary_user_account_id')->nullable()->index('IDX_1483A5E929630BFA');
+            $table->json('linked_account_emails')->nullable();
+        });
+
+        Schema::create('users_on_hold', function (Blueprint $table) {
+            $table->integer('users_on_hold_id', true);
+            $table->integer('user_id')->nullable()->index('IDX_A6A17393A76ED395');
+            $table->integer('box_id')->nullable()->index('IDX_A6A17393D8177B3F');
+            $table->longText('note')->nullable();
+            $table->float('pro_rata_fee', 10, 0);
+            $table->dateTime('dt_added');
+            $table->dateTime('dt_modified')->nullable();
+            $table->tinyInteger('is_on_hold');
+            $table->dateTime('release_date')->nullable();
+            $table->dateTime('start_date')->nullable();
+            $table->boolean('extend_package_end_date');
+        });
+
+        Schema::create('wod_capture', function (Blueprint $table) {
+            $table->integer('wod_capture_id', true);
+            $table->integer('wod_id')->nullable()->index('IDX_769E13891C30030');
+            $table->integer('user_id')->nullable()->index('IDX_769E138A76ED395');
+            $table->integer('capturer_id')->nullable()->index('IDX_769E138B573AD6A');
+            $table->integer('verifier_id')->nullable()->index('IDX_769E13895561DEE');
+            $table->boolean('is_verified');
+            $table->string('wod_capture_class', 5)->nullable();
+            $table->longText('wod_capture_comments')->nullable();
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_verified')->nullable();
+        });
+
+        Schema::create('wod_capture_comments', function (Blueprint $table) {
+            $table->integer('comment_id', true);
+            $table->integer('created_by_id')->nullable()->index('IDX_A8E6ADF1B03A8386');
+            $table->integer('wod_capture_id')->nullable()->index('IDX_A8E6ADF13F326A4E');
+            $table->longText('content')->nullable();
+            $table->dateTime('updated_on')->nullable();
+            $table->dateTime('created_on');
+            $table->boolean('deleted')->nullable();
+        });
+
+        Schema::create('wod_capture_exercises', function (Blueprint $table) {
+            $table->integer('wod_capture_exercise_id', true);
+            $table->integer('wod_capture_id')->nullable()->index('IDX_1E573AF63F326A4E');
+            $table->integer('exercise_id')->nullable()->index('IDX_1E573AF6E934951A');
+            $table->tinyInteger('is_pb')->nullable();
+            $table->tinyInteger('is_rx')->nullable();
+            $table->string('score', 5)->nullable();
+            $table->longText('note')->nullable();
+            $table->integer('verifier_id')->nullable()->index('IDX_1E573AF695561DEE');
+            $table->boolean('is_verified');
+            $table->dateTime('dt_verified')->nullable();
+            $table->boolean('is_active');
+        });
+
+        Schema::create('wod_capture_likes', function (Blueprint $table) {
+            $table->integer('like_id', true);
+            $table->integer('wod_capture_id')->nullable()->index('IDX_7D0E67423F326A4E');
+            $table->integer('user_id')->nullable()->index('IDX_7D0E6742A76ED395');
+        });
+
+        Schema::create('wod_exercise_prefix', function (Blueprint $table) {
+            $table->integer('wod_exercise_prefix_id', true);
+            $table->integer('wod_to_exercise_id')->nullable()->index('IDX_8E3F40B7DB4701AB');
+            $table->string('prefix');
+            $table->dateTime('dt_added')->nullable();
+            $table->dateTime('dt_modified')->nullable();
+            $table->boolean('is_active');
+        });
+
+        Schema::create('wod_to_exercise', function (Blueprint $table) {
+            $table->integer('wod_to_exercise_id', true);
+            $table->integer('wod_id')->nullable()->index('IDX_1866626591C30030');
+            $table->integer('exercise_id')->nullable()->index('IDX_18666265E934951A');
+            $table->boolean('is_active');
+            $table->dateTime('dt_added')->nullable();
+            $table->integer('wte_order');
+        });
+
+        Schema::create('wods', function (Blueprint $table) {
+            $table->integer('wod_id', true);
+            $table->integer('box_id')->nullable()->index('IDX_5CBA4501D8177B3F');
+            $table->string('wod_name')->nullable();
+            $table->string('nickname')->nullable();
+            $table->longText('descr')->nullable();
+            $table->longText('img')->nullable();
+            $table->longText('warmup')->nullable();
+            $table->longText('cooldown')->nullable();
+            $table->date('wod_date');
+            $table->dateTime('dt_added');
+            $table->longText('coach_notes')->nullable();
+            $table->longText('member_notes')->nullable();
+            $table->integer('programme_id')->nullable()->index('IDX_5CBA450162BB7AEE');
+        });
+
+        Schema::table('access_privileges_to_user_types', function (Blueprint $table) {
+            $table->foreign(['user_type_id'], 'FK_AEB04D9D9D419299')->references(['user_type_id'])->on('user_types');
+            $table->foreign(['access_privilege_id'], 'FK_AEB04D9DEEB712A8')->references(['access_privilege_id'])->on('access_privileges');
+        });
+
+        Schema::table('amendment_amendments', function (Blueprint $table) {
+            $table->foreign(['created_by_id'], 'FK_A5621DD3B03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_A5621DD3D8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('attendance_records', function (Blueprint $table) {
+            $table->foreign(['class_to_date_id'], 'FK_9B5AB6448002F93C')->references(['class_to_date_id'])->on('class_to_dates');
+            $table->foreign(['box_facility_id'], 'FK_9B5AB64485BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['class_booking_id'], 'FK_9B5AB644B53DEEC2')->references(['class_booking_id'])->on('class_bookings');
+            $table->foreign(['health_provider_id'], 'FK_9B5AB6448200BD4')->references(['id'])->on('health_providers');
+            $table->foreign(['user_id'], 'FK_9B5AB644A76ED395')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('banks', function (Blueprint $table) {
+            $table->foreign(['country_id'], 'FK_AB063796F92F3E70')->references(['country_id'])->on('countries');
+        });
+
+        Schema::table('body_measurement', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_E574BF11A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['created_by_id'], 'FK_E574BF11B03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('body_weight', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_92D1F647A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['created_by_id'], 'FK_92D1F647B03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('box_facilities_to_health_providers', function (Blueprint $table) {
+            $table->foreign(['health_provider_id'], 'FK_F3F54F388200BD4')->references(['id'])->on('health_providers');
+            $table->foreign(['box_facility_id'], 'FK_F3F54F3885BC5E22')->references(['box_facility_id'])->on('box_facility');
+        });
+
+        Schema::table('box_facility', function (Blueprint $table) {
+            $table->foreign(['box_facility_category_id'], 'FK_419E5616295EDF79')->references(['box_facility_category_id'])->on('box_facility_categories');
+            $table->foreign(['payment_gateway_id'], 'FK_419E561662890FD5')->references(['payment_gateway_id'])->on('payment_gateways');
+            $table->foreign(['timezone_id'], 'FK_419E56163FE997DE')->references(['timezone_id'])->on('timezones');
+            $table->foreign(['box_id'], 'FK_419E5616D8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('box_facility_to_payment_gateway', function (Blueprint $table) {
+            $table->foreign(['payment_gateway_id'], 'FK_548EBDB662890FD5')->references(['payment_gateway_id'])->on('payment_gateways');
+            $table->foreign(['box_facility_id'], 'FK_548EBDB685BC5E22')->references(['box_facility_id'])->on('box_facility');
+        });
+
+        Schema::table('box_settings', function (Blueprint $table) {
+            $table->foreign(['updated_by_id'], 'FK_B4826261896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_B4826261D8177B3F')->references(['box_id'])->on('boxes');
+            $table->foreign(['created_by_id'], 'FK_B4826261B03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('boxes', function (Blueprint $table) {
+            $table->foreign(['member_billing_currency_id'], 'FK_CDF1B2E928B3B407')->references(['currency_id'])->on('currencies');
+            $table->foreign(['region_id'], 'FK_CDF1B2E998260155')->references(['region_id'])->on('regions');
+            $table->foreign(['box_billing_currency_id'], 'FK_CDF1B2E9C764CF44')->references(['currency_id'])->on('currencies');
+            $table->foreign(['timezone_id'], 'FK_CDF1B2E93FE997DE')->references(['timezone_id'])->on('timezones');
+            $table->foreign(['box_status_id'], 'FK_CDF1B2E9BA1DA08E')->references(['box_status_id'])->on('box_status');
+            $table->foreign(['country_id'], 'FK_CDF1B2E9F92F3E70')->references(['country_id'])->on('countries');
+        });
+
+        Schema::table('broadcast_messages', function (Blueprint $table) {
+            $table->foreign(['box_id'], 'FK_67F48E11D8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('class_booking_waiting_list', function (Blueprint $table) {
+            $table->foreign(['user_package_id'], 'FK_CB61292F532B6D13')->references(['user_to_package_id'])->on('user_to_package');
+            $table->foreign(['updated_by_id'], 'FK_CB61292F896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['created_by_id'], 'FK_CB61292FB03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['class_to_date_id'], 'FK_CB61292F8002F93C')->references(['class_to_date_id'])->on('class_to_dates');
+            $table->foreign(['user_id'], 'FK_CB61292FA76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['class_id'], 'FK_CB61292FEA000B10')->references(['class_id'])->on('classes');
+        });
+
+        Schema::table('class_bookings', function (Blueprint $table) {
+            $table->foreign(['class_id'], 'FK_CE4BF765EA000B10')->references(['class_id'])->on('classes');
+            $table->foreign(['user_package_id'], 'FK_CE4BF765532B6D13')->references(['user_to_package_id'])->on('user_to_package');
+            $table->foreign(['class_to_date_id'], 'FK_CE4BF7658002F93C')->references(['class_to_date_id'])->on('class_to_dates');
+            $table->foreign(['user_id'], 'FK_CE4BF765A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['created_by_id'], 'FK_CE4BF765B03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['lead_member_id'], 'FK_CE4BF765EC34D1C6')->references(['member_id'])->on('lead_members');
+            $table->foreign(['class_recurring_booking_id'], 'FK_CE4BF76578314B7A')->references(['class_recurring_booking_id'])->on('class_recurring_bookings');
+            $table->foreign(['updated_by_id'], 'FK_CE4BF765896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['class_booking_status_id'], 'FK_CE4BF765B022641C')->references(['class_booking_status_id'])->on('class_booking_status');
+        });
+
+        Schema::table('class_coaches', function (Blueprint $table) {
+            $table->foreign(['coach_id'], 'FK_16670993C105691')->references(['user_id'])->on('users');
+            $table->foreign(['class_id'], 'FK_1667099EA000B10')->references(['class_id'])->on('classes');
+            $table->foreign(['coach_type_id'], 'FK_16670997E9C64DB')->references(['coach_type_id'])->on('coach_types');
+        });
+
+        Schema::table('class_recurring_bookings', function (Blueprint $table) {
+            $table->foreign(['user_package_id'], 'FK_D6A9D44F532B6D13')->references(['user_to_package_id'])->on('user_to_package');
+            $table->foreign(['created_by_id'], 'FK_D6A9D44FB03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['user_id'], 'FK_D6A9D44FA76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['class_id'], 'FK_D6A9D44FEA000B10')->references(['class_id'])->on('classes');
+        });
+
+        Schema::table('class_recurring_bookings_days_of_week', function (Blueprint $table) {
+            $table->foreign(['class_recurring_booking_id'], 'FK_AA82052278314B7A')->references(['class_recurring_booking_id'])->on('class_recurring_bookings');
+            $table->foreign(['class_day_id'], 'FK_AA820522C69E039E')->references(['class_day_id'])->on('class_days');
+        });
+
+        Schema::table('class_to_dates', function (Blueprint $table) {
+            $table->foreign(['coach_id'], 'FK_1486337E3C105691')->references(['user_id'])->on('users');
+            $table->foreign(['updated_by_id'], 'FK_1486337E896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['supporting_coach_id'], 'FK_1486337E80917240')->references(['user_id'])->on('users');
+            $table->foreign(['class_id'], 'FK_1486337EEA000B10')->references(['class_id'])->on('classes');
+        });
+
+        Schema::table('class_to_days', function (Blueprint $table) {
+            $table->foreign(['day_id'], 'FK_C97F8A559C24126')->references(['class_day_id'])->on('class_days');
+            $table->foreign(['class_id'], 'FK_C97F8A55EA000B10')->references(['class_id'])->on('classes');
+        });
+
+        Schema::table('class_to_packages', function (Blueprint $table) {
+            $table->foreign(['class_id'], 'FK_6E82913FEA000B10')->references(['class_id'])->on('classes');
+            $table->foreign(['package_id'], 'FK_6E82913FF44CABFF')->references(['package_id'])->on('packages');
+        });
+
+        Schema::table('classes', function (Blueprint $table) {
+            $table->foreign(['class_type_id'], 'FK_2ED7EC539EB6F')->references(['class_type_id'])->on('class_types');
+            $table->foreign(['updated_by_id'], 'FK_2ED7EC5896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_2ED7EC5D8177B3F')->references(['box_id'])->on('boxes');
+            $table->foreign(['box_facility_id'], 'FK_2ED7EC585BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['capturer_id'], 'FK_2ED7EC5B573AD6A')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('coach_rates', function (Blueprint $table) {
+            $table->foreign(['box_facility_id'], 'FK_5056C81685BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['user_id'], 'FK_5056C816A76ED395')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('coronavirus_vaccination_details', function (Blueprint $table) {
+            $table->foreign(['updated_by_id'], 'FK_DCB62998896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['created_by_id'], 'FK_DCB62998B03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['user_id'], 'FK_DCB62998A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_DCB62998D8177B3F')->references(['box_id'])->on('boxes')->onDelete('SET NULL');
+        });
+
+        Schema::table('countries', function (Blueprint $table) {
+            $table->foreign(['region_id'], 'FK_5D66EBAD98260155')->references(['region_id'])->on('regions');
+        });
+
+        Schema::table('covid19_questionnaire_results', function (Blueprint $table) {
+            $table->foreign(['updated_by_id'], 'FK_F5402DF896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['class_booking_id'], 'FK_F5402DFB53DEEC2')->references(['class_booking_id'])->on('class_bookings');
+            $table->foreign(['created_by_id'], 'FK_F5402DFB03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('crm_attachments', function (Blueprint $table) {
+            $table->foreign(['mailer_id'], 'FK_A4E26FF23F989867')->references(['mailer_id'])->on('crm_mailers');
+        });
+
+        Schema::table('crm_mailers', function (Blueprint $table) {
+            $table->foreign(['box_facility_id'], 'FK_27250D8D85BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['box_id'], 'FK_27250D8DD8177B3F')->references(['box_id'])->on('boxes');
+            $table->foreign(['created_by_id'], 'FK_27250D8DB03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('crm_mailing_lists', function (Blueprint $table) {
+            $table->foreign(['box_id'], 'FK_2CFFD04AD8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('crm_notification_unsubscriptions', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_8B1CD4C4A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['notification_id'], 'FK_8B1CD4C4EF1A9D84')->references(['notification_id'])->on('crm_notifications');
+        });
+
+        Schema::table('crm_notification_widgets', function (Blueprint $table) {
+            $table->foreign(['notification_id'], 'FK_C8662C6EF1A9D84')->references(['notification_id'])->on('crm_notifications');
+        });
+
+        Schema::table('crm_notifications', function (Blueprint $table) {
+            $table->foreign(['mailing_group_id'], 'FK_118DD5982348756B')->references(['mailing_group_id'])->on('crm_mailing_groups');
+            $table->foreign(['user_id'], 'FK_118DD598A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['parent_id'], 'FK_118DD598727ACA70')->references(['notification_id'])->on('crm_notifications');
+            $table->foreign(['box_id'], 'FK_118DD598D8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('crm_notifications_mailing_lists', function (Blueprint $table) {
+            $table->foreign(['mailing_list_id'], 'FK_165ECE72C7EF3E4')->references(['mailing_list_id'])->on('crm_mailing_lists');
+            $table->foreign(['notification_id'], 'FK_165ECE7EF1A9D84')->references(['notification_id'])->on('crm_notifications');
+        });
+
+        Schema::table('crm_recipients', function (Blueprint $table) {
+            $table->foreign(['mailer_id'], 'FK_51F8044C3F989867')->references(['mailer_id'])->on('crm_mailers');
+        });
+
+        Schema::table('crm_settings', function (Blueprint $table) {
+            $table->foreign(['box_facility_id'], 'FK_CF150EC685BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['box_id'], 'FK_CF150EC6D8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('debit_batch_statements', function (Blueprint $table) {
+            $table->foreign(['debit_batch_id'], 'FK_C7E7569A7C1380C4')->references(['debit_batch_id'])->on('debit_batches');
+        });
+
+        Schema::table('debit_batches', function (Blueprint $table) {
+            $table->foreign(['debit_day_date_id'], 'FK_18CE248F5D5E719C')->references(['debit_day_date_id'])->on('debit_day_dates');
+            $table->foreign(['box_facility_id'], 'FK_18CE248F85BC5E22')->references(['box_facility_id'])->on('box_facility');
+        });
+
+        Schema::table('debit_day_dates', function (Blueprint $table) {
+            $table->foreign(['debit_day_id'], 'FK_3EEF664F1157AE61')->references(['debit_day_id'])->on('debit_days');
+        });
+
+        Schema::table('debit_order_settings', function (Blueprint $table) {
+            $table->foreign(['debit_day_id'], 'FK_CF3604CD1157AE61')->references(['debit_day_id'])->on('debit_days');
+            $table->foreign(['box_id'], 'FK_CF3604CDD8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('drop_in_packages', function (Blueprint $table) {
+            $table->foreign(['updated_by'], 'FK_36886E5916FE72E1')->references(['user_id'])->on('users');
+            $table->foreign(['created_by'], 'FK_36886E59DE12AB56')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_36886E59D8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('drop_in_packages_to_classes', function (Blueprint $table) {
+            $table->foreign(['drop_in_package_id'], 'FK_BDCC9C874F1D441E')->references(['id'])->on('drop_in_packages');
+            $table->foreign(['class_id'], 'FK_BDCC9C87EA000B10')->references(['class_id'])->on('classes');
+        });
+
+        Schema::table('drop_in_packages_to_lead_members', function (Blueprint $table) {
+            $table->foreign(['updated_by'], 'FK_18F992AB16FE72E1')->references(['user_id'])->on('users');
+            $table->foreign(['drop_in_package_id'], 'FK_18F992AB4F1D441E')->references(['id'])->on('drop_in_packages');
+            $table->foreign(['lead_member_id'], 'FK_18F992ABEC34D1C6')->references(['member_id'])->on('lead_members');
+            $table->foreign(['invoice_id'], 'FK_18F992AB2989F1FD')->references(['invoice_id'])->on('finance_invoices');
+            $table->foreign(['created_by'], 'FK_18F992ABDE12AB56')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('exercise', function (Blueprint $table) {
+            $table->foreign(['exercise_category_id'], 'FK_AEDAD51C5FB48D66')->references(['exercise_category_id'])->on('exercise_category');
+            $table->foreign(['measuring_unit_id'], 'FK_AEDAD51CDCAFB353')->references(['measuring_unit_id'])->on('measuring_units');
+            $table->foreign(['box_id'], 'FK_AEDAD51CD8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('facility_membership_discounts', function (Blueprint $table) {
+            $table->foreign(['discount_id'], 'FK_9A71E2194C7C611F')->references(['discount_id'])->on('finance_discounts');
+            $table->foreign(['user_to_facility_id'], 'FK_9A71E219E217A82A')->references(['user_to_facility_id'])->on('user_to_facility');
+        });
+
+        Schema::table('facility_payment_gateway_settings', function (Blueprint $table) {
+            $table->foreign(['modified_id'], 'FK_6912F067A50BFD10')->references(['user_id'])->on('users');
+            $table->foreign(['box_facility_payment_gateway_id'], 'FK_6912F067BA6C2597')->references(['facility_to_payment_gateway_id'])->on('box_facility_to_payment_gateway');
+        });
+
+        Schema::table('finance_discounts', function (Blueprint $table) {
+            $table->foreign(['created_by_id'], 'FK_9F803894B03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_9F803894D8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('finance_facility_invoice_items', function (Blueprint $table) {
+            $table->foreign(['facility_invoice_id'], 'FK_AAC1B500272F2852')->references(['facility_invoice_id'])->on('finance_facility_invoices');
+            $table->foreign(['created_by_id'], 'FK_AAC1B500B03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('finance_facility_invoices', function (Blueprint $table) {
+            $table->foreign(['parent_invoice_id'], 'FK_4F4F3A156ECA75AD')->references(['facility_invoice_id'])->on('finance_facility_invoices');
+            $table->foreign(['created_by_id'], 'FK_4F4F3A15B03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['box_facility_id'], 'FK_4F4F3A1585BC5E22')->references(['box_facility_id'])->on('box_facility');
+        });
+
+        Schema::table('finance_facility_payments', function (Blueprint $table) {
+            $table->foreign(['facility_invoice_id'], 'FK_40B28EB2272F2852')->references(['facility_invoice_id'])->on('finance_facility_invoices');
+            $table->foreign(['created_by_id'], 'FK_40B28EB2B03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['box_facility_id'], 'FK_40B28EB285BC5E22')->references(['box_facility_id'])->on('box_facility');
+        });
+
+        Schema::table('finance_invoice_items', function (Blueprint $table) {
+            $table->foreign(['invoice_id'], 'FK_51EAA022989F1FD')->references(['invoice_id'])->on('finance_invoices');
+            $table->foreign(['created_by_id'], 'FK_51EAA02B03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['user_to_package_id'], 'FK_51EAA023DF1E4D2')->references(['user_to_package_id'])->on('user_to_package');
+        });
+
+        Schema::table('finance_invoices', function (Blueprint $table) {
+            $table->foreign(['user_to_facility_id'], 'FK_BB79DA88E217A82A')->references(['user_to_facility_id'])->on('user_to_facility')->onDelete('SET NULL');
+            $table->foreign(['user_to_package_id'], 'FK_BB79DA883DF1E4D2')->references(['user_to_package_id'])->on('user_to_package')->onDelete('SET NULL');
+            $table->foreign(['facility_to_payment_gateway_id'], 'FK_BB79DA887359B9E4')->references(['facility_to_payment_gateway_id'])->on('box_facility_to_payment_gateway');
+            $table->foreign(['box_facility_id'], 'FK_BB79DA8885BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['created_by_id'], 'FK_BB79DA88B03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['lead_member_id'], 'FK_BB79DA88EC34D1C6')->references(['member_id'])->on('lead_members');
+            $table->foreign(['parent_invoice_id'], 'FK_BB79DA886ECA75AD')->references(['invoice_id'])->on('finance_invoices');
+            $table->foreign(['upfront_user_id'], 'FK_BB79DA887949E708')->references(['user_id'])->on('users');
+            $table->foreign(['updated_by_id'], 'FK_BB79DA88896DBBDE')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('finance_payment_gateways', function (Blueprint $table) {
+            $table->foreign(['box_facility_id'], 'FK_24DC939485BC5E22')->references(['box_facility_id'])->on('box_facility');
+        });
+
+        Schema::table('finance_payments', function (Blueprint $table) {
+            $table->foreign(['invoice_id'], 'FK_B4846E2F2989F1FD')->references(['invoice_id'])->on('finance_invoices');
+            $table->foreign(['user_to_facility_id'], 'FK_B4846E2FE217A82A')->references(['user_to_facility_id'])->on('user_to_facility');
+            $table->foreign(['created_by_id'], 'FK_B4846E2FB03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('finance_top_ups', function (Blueprint $table) {
+            $table->foreign(['invoice_id'], 'FK_4FCE769D2989F1FD')->references(['invoice_id'])->on('finance_invoices');
+            $table->foreign(['updated_by_id'], 'FK_4FCE769D896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['user_to_package_id'], 'FK_4FCE769D3DF1E4D2')->references(['user_to_package_id'])->on('user_to_package');
+            $table->foreign(['created_by_id'], 'FK_4FCE769DB03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('finance_user_gocardless_credentials', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_360A919BA76ED395')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('finances_invoice_item_types', function (Blueprint $table) {
+            $table->foreign(['box_id'], 'FK_BBBF483FD8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('go_cardless_mandates', function (Blueprint $table) {
+            $table->foreign(['facility_payment_gateway_id'], 'FK_CD406C135FCAF0F1')->references(['facility_to_payment_gateway_id'])->on('box_facility_to_payment_gateway');
+            $table->foreign(['lead_member_id'], 'FK_CD406C13EC34D1C6')->references(['member_id'])->on('lead_members');
+            $table->foreign(['user_id'], 'FK_CD406C13A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_CD406C13D8177B3F')->references(['box_id'])->on('boxes')->onDelete('SET NULL');
+        });
+
+        Schema::table('injury_injuries', function (Blueprint $table) {
+            $table->foreign(['created_for_id'], 'FK_F6A3E2EE2F97E6E2')->references(['user_id'])->on('users');
+            $table->foreign(['updated_by_id'], 'FK_F6A3E2EE896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_F6A3E2EED8177B3F')->references(['box_id'])->on('boxes');
+            $table->foreign(['box_facility_id'], 'FK_F6A3E2EE85BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['created_by_id'], 'FK_F6A3E2EEB03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('injury_updates', function (Blueprint $table) {
+            $table->foreign(['injury_id'], 'FK_B0ABA897ABA45E9A')->references(['injury_id'])->on('injury_injuries');
+            $table->foreign(['created_by_id'], 'FK_B0ABA897B03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('lead_members', function (Blueprint $table) {
+            $table->foreign(['captured_by_id'], 'FK_1C6E8E9120097EF6')->references(['user_id'])->on('users');
+            $table->foreign(['box_facility_id'], 'FK_1C6E8E9185BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['referred_by_id'], 'FK_1C6E8E91758C8114')->references(['user_id'])->on('users');
+            $table->foreign(['waiver_id'], 'FK_1C6E8E91A43B7175')->references(['waiver_id'])->on('lead_waivers');
+        });
+
+        Schema::table('lead_settings', function (Blueprint $table) {
+            $table->foreign(['box_facility_id'], 'FK_4F1622C685BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['box_id'], 'FK_4F1622C6D8177B3F')->references(['box_id'])->on('boxes');
+            $table->foreign(['waiver_id'], 'FK_4F1622C6A43B7175')->references(['waiver_id'])->on('lead_waivers');
+        });
+
+        Schema::table('lead_waivers', function (Blueprint $table) {
+            $table->foreign(['parent_id'], 'FK_6EAA690F727ACA70')->references(['waiver_id'])->on('lead_waivers');
+            $table->foreign(['user_id'], 'FK_6EAA690FA76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['box_facility_id'], 'FK_6EAA690F85BC5E22')->references(['box_facility_id'])->on('box_facility');
+        });
+
+        Schema::table('leaderboard', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_182E5253A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['exercise_id'], 'FK_182E5253E934951A')->references(['exercise_id'])->on('exercise');
+        });
+
+        Schema::table('own_benchmarks', function (Blueprint $table) {
+            $table->foreign(['verifier_id'], 'FK_4466DA1E95561DEE')->references(['user_id'])->on('users');
+            $table->foreign(['exercise_id'], 'FK_4466DA1EE934951A')->references(['exercise_id'])->on('exercise');
+            $table->foreign(['user_id'], 'FK_4466DA1EA76ED395')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('package_to_box_facility', function (Blueprint $table) {
+            $table->foreign(['box_facility_id'], 'FK_1DEED96A85BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['package_id'], 'FK_1DEED96AF44CABFF')->references(['package_id'])->on('packages');
+        });
+
+        Schema::table('packages', function (Blueprint $table) {
+            $table->foreign(['package_limit_type_id'], 'FK_9BB5C0A72FD85FE5')->references(['package_limit_type_id'])->on('package_limit_types');
+            $table->foreign(['topup_stock_item_id'], 'FK_9BB5C0A7E8EF0847')->references(['stock_item_id'])->on('pos_stock_items');
+            $table->foreign(['box_id'], 'FK_9BB5C0A7D8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('personal_wod', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_62CCA740A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['measuring_unit_id'], 'FK_62CCA740DCAFB353')->references(['measuring_unit_id'])->on('measuring_units');
+            $table->foreign(['box_id'], 'FK_62CCA740D8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('pos_sale_items', function (Blueprint $table) {
+            $table->foreign(['sessions_released_by_id'], 'FK_788D66B7171FFC92')->references(['user_id'])->on('users');
+            $table->foreign(['stock_item_id'], 'FK_788D66B7BC942FD')->references(['stock_item_id'])->on('pos_stock_items');
+            $table->foreign(['sale_id'], 'FK_788D66B74A7E4868')->references(['sale_id'])->on('pos_sales');
+        });
+
+        Schema::table('pos_sales', function (Blueprint $table) {
+            $table->foreign(['invoice_id'], 'FK_929A92A12989F1FD')->references(['invoice_id'])->on('finance_invoices');
+            $table->foreign(['seller_id'], 'FK_929A92A18DE820D9')->references(['user_id'])->on('users');
+            $table->foreign(['box_facility_id'], 'FK_929A92A185BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['purchaser_id'], 'FK_929A92A1ED255ED6')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('pos_stock_items', function (Blueprint $table) {
+            $table->foreign(['box_facility_id'], 'FK_549E73F385BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['created_by_id'], 'FK_549E73F3B03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('programme_package_visibilities', function (Blueprint $table) {
+            $table->foreign(['programme_id'], 'FK_E1B1D46562BB7AEE')->references(['id'])->on('programmes');
+            $table->foreign(['package_id'], 'FK_E1B1D465F44CABFF')->references(['package_id'])->on('packages');
+        });
+
+        Schema::table('programmes', function (Blueprint $table) {
+            $table->foreign(['created_by_id'], 'FK_3631FC3FB03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_3631FC3FD8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('regions_to_currencies', function (Blueprint $table) {
+            $table->foreign(['currency_id'], 'FK_62606DDE38248176')->references(['currency_id'])->on('currencies');
+            $table->foreign(['region_id'], 'FK_62606DDE98260155')->references(['region_id'])->on('regions');
+        });
+
+        Schema::table('regions_to_timezones', function (Blueprint $table) {
+            $table->foreign(['timezone_id'], 'FK_D45FAAE93FE997DE')->references(['timezone_id'])->on('timezones');
+            $table->foreign(['region_id'], 'FK_D45FAAE998260155')->references(['region_id'])->on('regions');
+        });
+
+        Schema::table('saved_push_notifications', function (Blueprint $table) {
+            $table->foreign(['user_to_facility_id'], 'FK_F78342E5E217A82A')->references(['user_to_facility_id'])->on('user_to_facility');
+        });
+
+        Schema::table('scheduled_email_attachments', function (Blueprint $table) {
+            $table->foreign(['scheduled_email_id'], 'FK_C8873F9FD9E78316')->references(['scheduled_email_id'])->on('scheduled_emails');
+        });
+
+        Schema::table('scheduled_emails', function (Blueprint $table) {
+            $table->foreign(['mailer_id'], 'FK_E07F6C4B3F989867')->references(['mailer_id'])->on('crm_mailers');
+            $table->foreign(['box_id'], 'FK_E07F6C4BD8177B3F')->references(['box_id'])->on('boxes');
+            $table->foreign(['box_facility_id'], 'FK_E07F6C4B85BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['notification_id'], 'FK_E07F6C4BEF1A9D84')->references(['notification_id'])->on('crm_notifications');
+        });
+
+        Schema::table('scheduled_push', function (Blueprint $table) {
+            $table->foreign(['mailer_id'], 'FK_90FB514D3F989867')->references(['mailer_id'])->on('crm_mailers');
+            $table->foreign(['user_id'], 'FK_90FB514DA76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['notification_id'], 'FK_90FB514DEF1A9D84')->references(['notification_id'])->on('crm_notifications');
+            $table->foreign(['box_facility_id'], 'FK_90FB514D85BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['box_id'], 'FK_90FB514DD8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('scheduled_smses', function (Blueprint $table) {
+            $table->foreign(['mailer_id'], 'FK_7450729A3F989867')->references(['mailer_id'])->on('crm_mailers');
+            $table->foreign(['box_id'], 'FK_7450729AD8177B3F')->references(['box_id'])->on('boxes');
+            $table->foreign(['box_facility_id'], 'FK_7450729A85BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['notification_id'], 'FK_7450729AEF1A9D84')->references(['notification_id'])->on('crm_notifications');
+        });
+
+        Schema::table('scheduled_user_actions', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_8B216F74A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_8B216F74D8177B3F')->references(['box_id'])->on('boxes')->onDelete('SET NULL');
+        });
+
+        Schema::table('special_rates', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_E8EA057DA76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_E8EA057DD8177B3F')->references(['box_id'])->on('boxes')->onDelete('SET NULL');
+        });
+
+        Schema::table('stripe_mandates', function (Blueprint $table) {
+            $table->foreign(['facility_payment_gateway_id'], 'FK_1E2A1485FCAF0F1')->references(['facility_to_payment_gateway_id'])->on('box_facility_to_payment_gateway');
+            $table->foreign(['lead_member_id'], 'FK_1E2A148EC34D1C6')->references(['member_id'])->on('lead_members');
+            $table->foreign(['user_id'], 'FK_1E2A148A76ED395')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('taggables', function (Blueprint $table) {
+            $table->foreign(['updated_by_id'], 'FK_A9D1878E896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['tag_id'], 'FK_A9D1878EBAD26311')->references(['id'])->on('tags');
+            $table->foreign(['created_by_id'], 'FK_A9D1878EB03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('tags', function (Blueprint $table) {
+            $table->foreign(['updated_by_id'], 'FK_6FBC9426896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['created_by_id'], 'FK_6FBC9426B03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('task_assignees', function (Blueprint $table) {
+            $table->foreign(['task_id'], 'FK_6DEED38D8DB60186')->references(['task_id'])->on('task_tasks');
+            $table->foreign(['user_id'], 'FK_6DEED38DA76ED395')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('task_tasks', function (Blueprint $table) {
+            $table->foreign(['box_facility_id'], 'FK_97FC7EB785BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['created_by_id'], 'FK_97FC7EB7B03A8386')->references(['user_id'])->on('users');
+            $table->foreign(['updated_by_id'], 'FK_97FC7EB7896DBBDE')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_97FC7EB7D8177B3F')->references(['box_id'])->on('boxes');
+        });
+
+        Schema::table('user_access_privileges', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_BA74DAB8A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_BA74DAB8D8177B3F')->references(['box_id'])->on('boxes')->onDelete('SET NULL');
+            $table->foreign(['access_privilege_id'], 'FK_BA74DAB8EEB712A8')->references(['access_privilege_id'])->on('access_privileges');
+        });
+
+        Schema::table('user_banking_details', function (Blueprint $table) {
+            $table->foreign(['debit_day_id'], 'FK_2C49AE201157AE61')->references(['debit_day_id'])->on('debit_days');
+            $table->foreign(['user_id'], 'FK_2C49AE20A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_2C49AE20D8177B3F')->references(['box_id'])->on('boxes')->onDelete('SET NULL');
+            $table->foreign(['bank_id'], 'FK_2C49AE2011C8FB41')->references(['bank_id'])->on('banks');
+            $table->foreign(['account_type_id'], 'FK_2C49AE20C6798DB')->references(['account_type_id'])->on('account_types');
+        });
+
+        Schema::table('user_contracts', function (Blueprint $table) {
+            $table->foreign(['box_facility_id'], 'FK_9B0249785BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['box_id'], 'FK_9B02497D8177B3F')->references(['box_id'])->on('boxes');
+            $table->foreign(['user_id'], 'FK_9B02497A76ED395')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('user_facility_access_privileges', function (Blueprint $table) {
+            $table->foreign(['box_facility_id'], 'FK_3A6E332A85BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['user_id'], 'FK_3A6E332AA76ED395')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('user_login_attempts', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_FAE618A2A76ED395')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('user_to_batch', function (Blueprint $table) {
+            $table->foreign(['invoice_id'], 'FK_13BA87E42989F1FD')->references(['invoice_id'])->on('finance_invoices');
+            $table->foreign(['user_id'], 'FK_13BA87E4A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['debit_batch_id'], 'FK_13BA87E47C1380C4')->references(['debit_batch_id'])->on('debit_batches');
+        });
+
+        Schema::table('user_to_box', function (Blueprint $table) {
+            $table->foreign(['assigned_coach_utb_id'], 'FK_3BC79B09D7605335')->references(['user_to_box_id'])->on('user_to_box');
+            $table->foreign(['default_box_facility_id'], 'FK_3BC79B091DEAF6FE')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['programme_id'], 'FK_3BC79B0962BB7AEE')->references(['id'])->on('programmes');
+            $table->foreign(['region_id'], 'FK_3BC79B0998260155')->references(['region_id'])->on('regions');
+            $table->foreign(['user_id'], 'FK_3BC79B09A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_3BC79B09D8177B3F')->references(['box_id'])->on('boxes');
+            $table->foreign(['user_debit_status_id'], 'FK_3BC79B09557D7F87')->references(['user_debit_status_id'])->on('user_debit_status');
+            $table->foreign(['user_status_id'], 'FK_3BC79B096B178D59')->references(['user_status_id'])->on('user_status');
+            $table->foreign(['user_type_id'], 'FK_3BC79B099D419299')->references(['user_type_id'])->on('user_types');
+        });
+
+        Schema::table('user_to_facility', function (Blueprint $table) {
+            $table->foreign(['box_facility_id'], 'FK_741BC38985BC5E22')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['user_id'], 'FK_741BC389A76ED395')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('user_to_package', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_F7979C8CA76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['package_id'], 'FK_F7979C8CF44CABFF')->references(['package_id'])->on('packages');
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign(['gender_id'], 'FK_1483A5E9708A0E0')->references(['gender_id'])->on('gender');
+            $table->foreign(['user_login_attempt_id'], 'FK_1483A5E9133640F')->references(['user_login_attempt_id'])->on('user_login_attempts');
+            $table->foreign(['region_id'], 'FK_1483A5E998260155')->references(['region_id'])->on('regions');
+            $table->foreign(['coach_box_facility_id'], 'FK_1483A5E93AA24A20')->references(['box_facility_id'])->on('box_facility');
+            $table->foreign(['linked_user_id'], 'FK_1483A5E9CC26EB02')->references(['user_id'])->on('users');
+            $table->foreign(['user_debit_status_id'], 'FK_1483A5E9557D7F87')->references(['user_debit_status_id'])->on('user_debit_status');
+            $table->foreign(['user_status_id'], 'FK_1483A5E96B178D59')->references(['user_status_id'])->on('user_status');
+            $table->foreign(['health_provider_id'], 'FK_1483A5E98200BD4')->references(['id'])->on('health_providers');
+            $table->foreign(['primary_user_account_id'], 'FK_1483A5E929630BFA')->references(['user_id'])->on('users');
+            $table->foreign(['user_type_id'], 'FK_1483A5E99D419299')->references(['user_type_id'])->on('user_types');
+            $table->foreign(['assigned_coach_id'], 'FK_1483A5E9411D5098')->references(['user_id'])->on('users');
+            $table->foreign(['programme_id'], 'FK_1483A5E962BB7AEE')->references(['id'])->on('programmes');
+        });
+
+        Schema::table('users_on_hold', function (Blueprint $table) {
+            $table->foreign(['user_id'], 'FK_A6A17393A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['box_id'], 'FK_A6A17393D8177B3F')->references(['box_id'])->on('boxes')->onDelete('SET NULL');
+        });
+
+        Schema::table('wod_capture', function (Blueprint $table) {
+            $table->foreign(['wod_id'], 'FK_769E13891C30030')->references(['wod_id'])->on('wods');
+            $table->foreign(['user_id'], 'FK_769E138A76ED395')->references(['user_id'])->on('users');
+            $table->foreign(['verifier_id'], 'FK_769E13895561DEE')->references(['user_id'])->on('users');
+            $table->foreign(['capturer_id'], 'FK_769E138B573AD6A')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('wod_capture_comments', function (Blueprint $table) {
+            $table->foreign(['wod_capture_id'], 'FK_A8E6ADF13F326A4E')->references(['wod_capture_id'])->on('wod_capture');
+            $table->foreign(['created_by_id'], 'FK_A8E6ADF1B03A8386')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('wod_capture_exercises', function (Blueprint $table) {
+            $table->foreign(['wod_capture_id'], 'FK_1E573AF63F326A4E')->references(['wod_capture_id'])->on('wod_capture');
+            $table->foreign(['exercise_id'], 'FK_1E573AF6E934951A')->references(['exercise_id'])->on('exercise');
+            $table->foreign(['verifier_id'], 'FK_1E573AF695561DEE')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('wod_capture_likes', function (Blueprint $table) {
+            $table->foreign(['wod_capture_id'], 'FK_7D0E67423F326A4E')->references(['wod_capture_id'])->on('wod_capture');
+            $table->foreign(['user_id'], 'FK_7D0E6742A76ED395')->references(['user_id'])->on('users');
+        });
+
+        Schema::table('wod_exercise_prefix', function (Blueprint $table) {
+            $table->foreign(['wod_to_exercise_id'], 'FK_8E3F40B7DB4701AB')->references(['wod_to_exercise_id'])->on('wod_to_exercise');
+        });
+
+        Schema::table('wod_to_exercise', function (Blueprint $table) {
+            $table->foreign(['wod_id'], 'FK_1866626591C30030')->references(['wod_id'])->on('wods');
+            $table->foreign(['exercise_id'], 'FK_18666265E934951A')->references(['exercise_id'])->on('exercise');
+        });
+
+        Schema::table('wods', function (Blueprint $table) {
+            $table->foreign(['programme_id'], 'FK_5CBA450162BB7AEE')->references(['id'])->on('programmes');
+            $table->foreign(['box_id'], 'FK_5CBA4501D8177B3F')->references(['box_id'])->on('boxes');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('wods', function (Blueprint $table) {
+            $table->dropForeign('FK_5CBA450162BB7AEE');
+            $table->dropForeign('FK_5CBA4501D8177B3F');
+        });
+
+        Schema::table('wod_to_exercise', function (Blueprint $table) {
+            $table->dropForeign('FK_1866626591C30030');
+            $table->dropForeign('FK_18666265E934951A');
+        });
+
+        Schema::table('wod_exercise_prefix', function (Blueprint $table) {
+            $table->dropForeign('FK_8E3F40B7DB4701AB');
+        });
+
+        Schema::table('wod_capture_likes', function (Blueprint $table) {
+            $table->dropForeign('FK_7D0E67423F326A4E');
+            $table->dropForeign('FK_7D0E6742A76ED395');
+        });
+
+        Schema::table('wod_capture_exercises', function (Blueprint $table) {
+            $table->dropForeign('FK_1E573AF63F326A4E');
+            $table->dropForeign('FK_1E573AF6E934951A');
+            $table->dropForeign('FK_1E573AF695561DEE');
+        });
+
+        Schema::table('wod_capture_comments', function (Blueprint $table) {
+            $table->dropForeign('FK_A8E6ADF13F326A4E');
+            $table->dropForeign('FK_A8E6ADF1B03A8386');
+        });
+
+        Schema::table('wod_capture', function (Blueprint $table) {
+            $table->dropForeign('FK_769E13891C30030');
+            $table->dropForeign('FK_769E138A76ED395');
+            $table->dropForeign('FK_769E13895561DEE');
+            $table->dropForeign('FK_769E138B573AD6A');
+        });
+
+        Schema::table('users_on_hold', function (Blueprint $table) {
+            $table->dropForeign('FK_A6A17393A76ED395');
+            $table->dropForeign('FK_A6A17393D8177B3F');
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign('FK_1483A5E9708A0E0');
+            $table->dropForeign('FK_1483A5E9133640F');
+            $table->dropForeign('FK_1483A5E998260155');
+            $table->dropForeign('FK_1483A5E93AA24A20');
+            $table->dropForeign('FK_1483A5E9CC26EB02');
+            $table->dropForeign('FK_1483A5E9557D7F87');
+            $table->dropForeign('FK_1483A5E96B178D59');
+            $table->dropForeign('FK_1483A5E98200BD4');
+            $table->dropForeign('FK_1483A5E929630BFA');
+            $table->dropForeign('FK_1483A5E99D419299');
+            $table->dropForeign('FK_1483A5E9411D5098');
+            $table->dropForeign('FK_1483A5E962BB7AEE');
+        });
+
+        Schema::table('user_to_package', function (Blueprint $table) {
+            $table->dropForeign('FK_F7979C8CA76ED395');
+            $table->dropForeign('FK_F7979C8CF44CABFF');
+        });
+
+        Schema::table('user_to_facility', function (Blueprint $table) {
+            $table->dropForeign('FK_741BC38985BC5E22');
+            $table->dropForeign('FK_741BC389A76ED395');
+        });
+
+        Schema::table('user_to_box', function (Blueprint $table) {
+            $table->dropForeign('FK_3BC79B09D7605335');
+            $table->dropForeign('FK_3BC79B091DEAF6FE');
+            $table->dropForeign('FK_3BC79B0962BB7AEE');
+            $table->dropForeign('FK_3BC79B0998260155');
+            $table->dropForeign('FK_3BC79B09A76ED395');
+            $table->dropForeign('FK_3BC79B09D8177B3F');
+            $table->dropForeign('FK_3BC79B09557D7F87');
+            $table->dropForeign('FK_3BC79B096B178D59');
+            $table->dropForeign('FK_3BC79B099D419299');
+        });
+
+        Schema::table('user_to_batch', function (Blueprint $table) {
+            $table->dropForeign('FK_13BA87E42989F1FD');
+            $table->dropForeign('FK_13BA87E4A76ED395');
+            $table->dropForeign('FK_13BA87E47C1380C4');
+        });
+
+        Schema::table('user_login_attempts', function (Blueprint $table) {
+            $table->dropForeign('FK_FAE618A2A76ED395');
+        });
+
+        Schema::table('user_facility_access_privileges', function (Blueprint $table) {
+            $table->dropForeign('FK_3A6E332A85BC5E22');
+            $table->dropForeign('FK_3A6E332AA76ED395');
+        });
+
+        Schema::table('user_contracts', function (Blueprint $table) {
+            $table->dropForeign('FK_9B0249785BC5E22');
+            $table->dropForeign('FK_9B02497D8177B3F');
+            $table->dropForeign('FK_9B02497A76ED395');
+        });
+
+        Schema::table('user_banking_details', function (Blueprint $table) {
+            $table->dropForeign('FK_2C49AE201157AE61');
+            $table->dropForeign('FK_2C49AE20A76ED395');
+            $table->dropForeign('FK_2C49AE20D8177B3F');
+            $table->dropForeign('FK_2C49AE2011C8FB41');
+            $table->dropForeign('FK_2C49AE20C6798DB');
+        });
+
+        Schema::table('user_access_privileges', function (Blueprint $table) {
+            $table->dropForeign('FK_BA74DAB8A76ED395');
+            $table->dropForeign('FK_BA74DAB8D8177B3F');
+            $table->dropForeign('FK_BA74DAB8EEB712A8');
+        });
+
+        Schema::table('task_tasks', function (Blueprint $table) {
+            $table->dropForeign('FK_97FC7EB785BC5E22');
+            $table->dropForeign('FK_97FC7EB7B03A8386');
+            $table->dropForeign('FK_97FC7EB7896DBBDE');
+            $table->dropForeign('FK_97FC7EB7D8177B3F');
+        });
+
+        Schema::table('task_assignees', function (Blueprint $table) {
+            $table->dropForeign('FK_6DEED38D8DB60186');
+            $table->dropForeign('FK_6DEED38DA76ED395');
+        });
+
+        Schema::table('tags', function (Blueprint $table) {
+            $table->dropForeign('FK_6FBC9426896DBBDE');
+            $table->dropForeign('FK_6FBC9426B03A8386');
+        });
+
+        Schema::table('taggables', function (Blueprint $table) {
+            $table->dropForeign('FK_A9D1878E896DBBDE');
+            $table->dropForeign('FK_A9D1878EBAD26311');
+            $table->dropForeign('FK_A9D1878EB03A8386');
+        });
+
+        Schema::table('stripe_mandates', function (Blueprint $table) {
+            $table->dropForeign('FK_1E2A1485FCAF0F1');
+            $table->dropForeign('FK_1E2A148EC34D1C6');
+            $table->dropForeign('FK_1E2A148A76ED395');
+        });
+
+        Schema::table('special_rates', function (Blueprint $table) {
+            $table->dropForeign('FK_E8EA057DA76ED395');
+            $table->dropForeign('FK_E8EA057DD8177B3F');
+        });
+
+        Schema::table('scheduled_user_actions', function (Blueprint $table) {
+            $table->dropForeign('FK_8B216F74A76ED395');
+            $table->dropForeign('FK_8B216F74D8177B3F');
+        });
+
+        Schema::table('scheduled_smses', function (Blueprint $table) {
+            $table->dropForeign('FK_7450729A3F989867');
+            $table->dropForeign('FK_7450729AD8177B3F');
+            $table->dropForeign('FK_7450729A85BC5E22');
+            $table->dropForeign('FK_7450729AEF1A9D84');
+        });
+
+        Schema::table('scheduled_push', function (Blueprint $table) {
+            $table->dropForeign('FK_90FB514D3F989867');
+            $table->dropForeign('FK_90FB514DA76ED395');
+            $table->dropForeign('FK_90FB514DEF1A9D84');
+            $table->dropForeign('FK_90FB514D85BC5E22');
+            $table->dropForeign('FK_90FB514DD8177B3F');
+        });
+
+        Schema::table('scheduled_emails', function (Blueprint $table) {
+            $table->dropForeign('FK_E07F6C4B3F989867');
+            $table->dropForeign('FK_E07F6C4BD8177B3F');
+            $table->dropForeign('FK_E07F6C4B85BC5E22');
+            $table->dropForeign('FK_E07F6C4BEF1A9D84');
+        });
+
+        Schema::table('scheduled_email_attachments', function (Blueprint $table) {
+            $table->dropForeign('FK_C8873F9FD9E78316');
+        });
+
+        Schema::table('saved_push_notifications', function (Blueprint $table) {
+            $table->dropForeign('FK_F78342E5E217A82A');
+        });
+
+        Schema::table('regions_to_timezones', function (Blueprint $table) {
+            $table->dropForeign('FK_D45FAAE93FE997DE');
+            $table->dropForeign('FK_D45FAAE998260155');
+        });
+
+        Schema::table('regions_to_currencies', function (Blueprint $table) {
+            $table->dropForeign('FK_62606DDE38248176');
+            $table->dropForeign('FK_62606DDE98260155');
+        });
+
+        Schema::table('programmes', function (Blueprint $table) {
+            $table->dropForeign('FK_3631FC3FB03A8386');
+            $table->dropForeign('FK_3631FC3FD8177B3F');
+        });
+
+        Schema::table('programme_package_visibilities', function (Blueprint $table) {
+            $table->dropForeign('FK_E1B1D46562BB7AEE');
+            $table->dropForeign('FK_E1B1D465F44CABFF');
+        });
+
+        Schema::table('pos_stock_items', function (Blueprint $table) {
+            $table->dropForeign('FK_549E73F385BC5E22');
+            $table->dropForeign('FK_549E73F3B03A8386');
+        });
+
+        Schema::table('pos_sales', function (Blueprint $table) {
+            $table->dropForeign('FK_929A92A12989F1FD');
+            $table->dropForeign('FK_929A92A18DE820D9');
+            $table->dropForeign('FK_929A92A185BC5E22');
+            $table->dropForeign('FK_929A92A1ED255ED6');
+        });
+
+        Schema::table('pos_sale_items', function (Blueprint $table) {
+            $table->dropForeign('FK_788D66B7171FFC92');
+            $table->dropForeign('FK_788D66B7BC942FD');
+            $table->dropForeign('FK_788D66B74A7E4868');
+        });
+
+        Schema::table('personal_wod', function (Blueprint $table) {
+            $table->dropForeign('FK_62CCA740A76ED395');
+            $table->dropForeign('FK_62CCA740DCAFB353');
+            $table->dropForeign('FK_62CCA740D8177B3F');
+        });
+
+        Schema::table('packages', function (Blueprint $table) {
+            $table->dropForeign('FK_9BB5C0A72FD85FE5');
+            $table->dropForeign('FK_9BB5C0A7E8EF0847');
+            $table->dropForeign('FK_9BB5C0A7D8177B3F');
+        });
+
+        Schema::table('package_to_box_facility', function (Blueprint $table) {
+            $table->dropForeign('FK_1DEED96A85BC5E22');
+            $table->dropForeign('FK_1DEED96AF44CABFF');
+        });
+
+        Schema::table('own_benchmarks', function (Blueprint $table) {
+            $table->dropForeign('FK_4466DA1E95561DEE');
+            $table->dropForeign('FK_4466DA1EE934951A');
+            $table->dropForeign('FK_4466DA1EA76ED395');
+        });
+
+        Schema::table('leaderboard', function (Blueprint $table) {
+            $table->dropForeign('FK_182E5253A76ED395');
+            $table->dropForeign('FK_182E5253E934951A');
+        });
+
+        Schema::table('lead_waivers', function (Blueprint $table) {
+            $table->dropForeign('FK_6EAA690F727ACA70');
+            $table->dropForeign('FK_6EAA690FA76ED395');
+            $table->dropForeign('FK_6EAA690F85BC5E22');
+        });
+
+        Schema::table('lead_settings', function (Blueprint $table) {
+            $table->dropForeign('FK_4F1622C685BC5E22');
+            $table->dropForeign('FK_4F1622C6D8177B3F');
+            $table->dropForeign('FK_4F1622C6A43B7175');
+        });
+
+        Schema::table('lead_members', function (Blueprint $table) {
+            $table->dropForeign('FK_1C6E8E9120097EF6');
+            $table->dropForeign('FK_1C6E8E9185BC5E22');
+            $table->dropForeign('FK_1C6E8E91758C8114');
+            $table->dropForeign('FK_1C6E8E91A43B7175');
+        });
+
+        Schema::table('injury_updates', function (Blueprint $table) {
+            $table->dropForeign('FK_B0ABA897ABA45E9A');
+            $table->dropForeign('FK_B0ABA897B03A8386');
+        });
+
+        Schema::table('injury_injuries', function (Blueprint $table) {
+            $table->dropForeign('FK_F6A3E2EE2F97E6E2');
+            $table->dropForeign('FK_F6A3E2EE896DBBDE');
+            $table->dropForeign('FK_F6A3E2EED8177B3F');
+            $table->dropForeign('FK_F6A3E2EE85BC5E22');
+            $table->dropForeign('FK_F6A3E2EEB03A8386');
+        });
+
+        Schema::table('go_cardless_mandates', function (Blueprint $table) {
+            $table->dropForeign('FK_CD406C135FCAF0F1');
+            $table->dropForeign('FK_CD406C13EC34D1C6');
+            $table->dropForeign('FK_CD406C13A76ED395');
+            $table->dropForeign('FK_CD406C13D8177B3F');
+        });
+
+        Schema::table('finances_invoice_item_types', function (Blueprint $table) {
+            $table->dropForeign('FK_BBBF483FD8177B3F');
+        });
+
+        Schema::table('finance_user_gocardless_credentials', function (Blueprint $table) {
+            $table->dropForeign('FK_360A919BA76ED395');
+        });
+
+        Schema::table('finance_top_ups', function (Blueprint $table) {
+            $table->dropForeign('FK_4FCE769D2989F1FD');
+            $table->dropForeign('FK_4FCE769D896DBBDE');
+            $table->dropForeign('FK_4FCE769D3DF1E4D2');
+            $table->dropForeign('FK_4FCE769DB03A8386');
+        });
+
+        Schema::table('finance_payments', function (Blueprint $table) {
+            $table->dropForeign('FK_B4846E2F2989F1FD');
+            $table->dropForeign('FK_B4846E2FE217A82A');
+            $table->dropForeign('FK_B4846E2FB03A8386');
+        });
+
+        Schema::table('finance_payment_gateways', function (Blueprint $table) {
+            $table->dropForeign('FK_24DC939485BC5E22');
+        });
+
+        Schema::table('finance_invoices', function (Blueprint $table) {
+            $table->dropForeign('FK_BB79DA88E217A82A');
+            $table->dropForeign('FK_BB79DA883DF1E4D2');
+            $table->dropForeign('FK_BB79DA887359B9E4');
+            $table->dropForeign('FK_BB79DA8885BC5E22');
+            $table->dropForeign('FK_BB79DA88B03A8386');
+            $table->dropForeign('FK_BB79DA88EC34D1C6');
+            $table->dropForeign('FK_BB79DA886ECA75AD');
+            $table->dropForeign('FK_BB79DA887949E708');
+            $table->dropForeign('FK_BB79DA88896DBBDE');
+        });
+
+        Schema::table('finance_invoice_items', function (Blueprint $table) {
+            $table->dropForeign('FK_51EAA022989F1FD');
+            $table->dropForeign('FK_51EAA02B03A8386');
+            $table->dropForeign('FK_51EAA023DF1E4D2');
+        });
+
+        Schema::table('finance_facility_payments', function (Blueprint $table) {
+            $table->dropForeign('FK_40B28EB2272F2852');
+            $table->dropForeign('FK_40B28EB2B03A8386');
+            $table->dropForeign('FK_40B28EB285BC5E22');
+        });
+
+        Schema::table('finance_facility_invoices', function (Blueprint $table) {
+            $table->dropForeign('FK_4F4F3A156ECA75AD');
+            $table->dropForeign('FK_4F4F3A15B03A8386');
+            $table->dropForeign('FK_4F4F3A1585BC5E22');
+        });
+
+        Schema::table('finance_facility_invoice_items', function (Blueprint $table) {
+            $table->dropForeign('FK_AAC1B500272F2852');
+            $table->dropForeign('FK_AAC1B500B03A8386');
+        });
+
+        Schema::table('finance_discounts', function (Blueprint $table) {
+            $table->dropForeign('FK_9F803894B03A8386');
+            $table->dropForeign('FK_9F803894D8177B3F');
+        });
+
+        Schema::table('facility_payment_gateway_settings', function (Blueprint $table) {
+            $table->dropForeign('FK_6912F067A50BFD10');
+            $table->dropForeign('FK_6912F067BA6C2597');
+        });
+
+        Schema::table('facility_membership_discounts', function (Blueprint $table) {
+            $table->dropForeign('FK_9A71E2194C7C611F');
+            $table->dropForeign('FK_9A71E219E217A82A');
+        });
+
+        Schema::table('exercise', function (Blueprint $table) {
+            $table->dropForeign('FK_AEDAD51C5FB48D66');
+            $table->dropForeign('FK_AEDAD51CDCAFB353');
+            $table->dropForeign('FK_AEDAD51CD8177B3F');
+        });
+
+        Schema::table('drop_in_packages_to_lead_members', function (Blueprint $table) {
+            $table->dropForeign('FK_18F992AB16FE72E1');
+            $table->dropForeign('FK_18F992AB4F1D441E');
+            $table->dropForeign('FK_18F992ABEC34D1C6');
+            $table->dropForeign('FK_18F992AB2989F1FD');
+            $table->dropForeign('FK_18F992ABDE12AB56');
+        });
+
+        Schema::table('drop_in_packages_to_classes', function (Blueprint $table) {
+            $table->dropForeign('FK_BDCC9C874F1D441E');
+            $table->dropForeign('FK_BDCC9C87EA000B10');
+        });
+
+        Schema::table('drop_in_packages', function (Blueprint $table) {
+            $table->dropForeign('FK_36886E5916FE72E1');
+            $table->dropForeign('FK_36886E59DE12AB56');
+            $table->dropForeign('FK_36886E59D8177B3F');
+        });
+
+        Schema::table('debit_order_settings', function (Blueprint $table) {
+            $table->dropForeign('FK_CF3604CD1157AE61');
+            $table->dropForeign('FK_CF3604CDD8177B3F');
+        });
+
+        Schema::table('debit_day_dates', function (Blueprint $table) {
+            $table->dropForeign('FK_3EEF664F1157AE61');
+        });
+
+        Schema::table('debit_batches', function (Blueprint $table) {
+            $table->dropForeign('FK_18CE248F5D5E719C');
+            $table->dropForeign('FK_18CE248F85BC5E22');
+        });
+
+        Schema::table('debit_batch_statements', function (Blueprint $table) {
+            $table->dropForeign('FK_C7E7569A7C1380C4');
+        });
+
+        Schema::table('crm_settings', function (Blueprint $table) {
+            $table->dropForeign('FK_CF150EC685BC5E22');
+            $table->dropForeign('FK_CF150EC6D8177B3F');
+        });
+
+        Schema::table('crm_recipients', function (Blueprint $table) {
+            $table->dropForeign('FK_51F8044C3F989867');
+        });
+
+        Schema::table('crm_notifications_mailing_lists', function (Blueprint $table) {
+            $table->dropForeign('FK_165ECE72C7EF3E4');
+            $table->dropForeign('FK_165ECE7EF1A9D84');
+        });
+
+        Schema::table('crm_notifications', function (Blueprint $table) {
+            $table->dropForeign('FK_118DD5982348756B');
+            $table->dropForeign('FK_118DD598A76ED395');
+            $table->dropForeign('FK_118DD598727ACA70');
+            $table->dropForeign('FK_118DD598D8177B3F');
+        });
+
+        Schema::table('crm_notification_widgets', function (Blueprint $table) {
+            $table->dropForeign('FK_C8662C6EF1A9D84');
+        });
+
+        Schema::table('crm_notification_unsubscriptions', function (Blueprint $table) {
+            $table->dropForeign('FK_8B1CD4C4A76ED395');
+            $table->dropForeign('FK_8B1CD4C4EF1A9D84');
+        });
+
+        Schema::table('crm_mailing_lists', function (Blueprint $table) {
+            $table->dropForeign('FK_2CFFD04AD8177B3F');
+        });
+
+        Schema::table('crm_mailers', function (Blueprint $table) {
+            $table->dropForeign('FK_27250D8D85BC5E22');
+            $table->dropForeign('FK_27250D8DD8177B3F');
+            $table->dropForeign('FK_27250D8DB03A8386');
+        });
+
+        Schema::table('crm_attachments', function (Blueprint $table) {
+            $table->dropForeign('FK_A4E26FF23F989867');
+        });
+
+        Schema::table('covid19_questionnaire_results', function (Blueprint $table) {
+            $table->dropForeign('FK_F5402DF896DBBDE');
+            $table->dropForeign('FK_F5402DFB53DEEC2');
+            $table->dropForeign('FK_F5402DFB03A8386');
+        });
+
+        Schema::table('countries', function (Blueprint $table) {
+            $table->dropForeign('FK_5D66EBAD98260155');
+        });
+
+        Schema::table('coronavirus_vaccination_details', function (Blueprint $table) {
+            $table->dropForeign('FK_DCB62998896DBBDE');
+            $table->dropForeign('FK_DCB62998B03A8386');
+            $table->dropForeign('FK_DCB62998A76ED395');
+            $table->dropForeign('FK_DCB62998D8177B3F');
+        });
+
+        Schema::table('coach_rates', function (Blueprint $table) {
+            $table->dropForeign('FK_5056C81685BC5E22');
+            $table->dropForeign('FK_5056C816A76ED395');
+        });
+
+        Schema::table('classes', function (Blueprint $table) {
+            $table->dropForeign('FK_2ED7EC539EB6F');
+            $table->dropForeign('FK_2ED7EC5896DBBDE');
+            $table->dropForeign('FK_2ED7EC5D8177B3F');
+            $table->dropForeign('FK_2ED7EC585BC5E22');
+            $table->dropForeign('FK_2ED7EC5B573AD6A');
+        });
+
+        Schema::table('class_to_packages', function (Blueprint $table) {
+            $table->dropForeign('FK_6E82913FEA000B10');
+            $table->dropForeign('FK_6E82913FF44CABFF');
+        });
+
+        Schema::table('class_to_days', function (Blueprint $table) {
+            $table->dropForeign('FK_C97F8A559C24126');
+            $table->dropForeign('FK_C97F8A55EA000B10');
+        });
+
+        Schema::table('class_to_dates', function (Blueprint $table) {
+            $table->dropForeign('FK_1486337E3C105691');
+            $table->dropForeign('FK_1486337E896DBBDE');
+            $table->dropForeign('FK_1486337E80917240');
+            $table->dropForeign('FK_1486337EEA000B10');
+        });
+
+        Schema::table('class_recurring_bookings_days_of_week', function (Blueprint $table) {
+            $table->dropForeign('FK_AA82052278314B7A');
+            $table->dropForeign('FK_AA820522C69E039E');
+        });
+
+        Schema::table('class_recurring_bookings', function (Blueprint $table) {
+            $table->dropForeign('FK_D6A9D44F532B6D13');
+            $table->dropForeign('FK_D6A9D44FB03A8386');
+            $table->dropForeign('FK_D6A9D44FA76ED395');
+            $table->dropForeign('FK_D6A9D44FEA000B10');
+        });
+
+        Schema::table('class_coaches', function (Blueprint $table) {
+            $table->dropForeign('FK_16670993C105691');
+            $table->dropForeign('FK_1667099EA000B10');
+            $table->dropForeign('FK_16670997E9C64DB');
+        });
+
+        Schema::table('class_bookings', function (Blueprint $table) {
+            $table->dropForeign('FK_CE4BF765EA000B10');
+            $table->dropForeign('FK_CE4BF765532B6D13');
+            $table->dropForeign('FK_CE4BF7658002F93C');
+            $table->dropForeign('FK_CE4BF765A76ED395');
+            $table->dropForeign('FK_CE4BF765B03A8386');
+            $table->dropForeign('FK_CE4BF765EC34D1C6');
+            $table->dropForeign('FK_CE4BF76578314B7A');
+            $table->dropForeign('FK_CE4BF765896DBBDE');
+            $table->dropForeign('FK_CE4BF765B022641C');
+        });
+
+        Schema::table('class_booking_waiting_list', function (Blueprint $table) {
+            $table->dropForeign('FK_CB61292F532B6D13');
+            $table->dropForeign('FK_CB61292F896DBBDE');
+            $table->dropForeign('FK_CB61292FB03A8386');
+            $table->dropForeign('FK_CB61292F8002F93C');
+            $table->dropForeign('FK_CB61292FA76ED395');
+            $table->dropForeign('FK_CB61292FEA000B10');
+        });
+
+        Schema::table('broadcast_messages', function (Blueprint $table) {
+            $table->dropForeign('FK_67F48E11D8177B3F');
+        });
+
+        Schema::table('boxes', function (Blueprint $table) {
+            $table->dropForeign('FK_CDF1B2E928B3B407');
+            $table->dropForeign('FK_CDF1B2E998260155');
+            $table->dropForeign('FK_CDF1B2E9C764CF44');
+            $table->dropForeign('FK_CDF1B2E93FE997DE');
+            $table->dropForeign('FK_CDF1B2E9BA1DA08E');
+            $table->dropForeign('FK_CDF1B2E9F92F3E70');
+        });
+
+        Schema::table('box_settings', function (Blueprint $table) {
+            $table->dropForeign('FK_B4826261896DBBDE');
+            $table->dropForeign('FK_B4826261D8177B3F');
+            $table->dropForeign('FK_B4826261B03A8386');
+        });
+
+        Schema::table('box_facility_to_payment_gateway', function (Blueprint $table) {
+            $table->dropForeign('FK_548EBDB662890FD5');
+            $table->dropForeign('FK_548EBDB685BC5E22');
+        });
+
+        Schema::table('box_facility', function (Blueprint $table) {
+            $table->dropForeign('FK_419E5616295EDF79');
+            $table->dropForeign('FK_419E561662890FD5');
+            $table->dropForeign('FK_419E56163FE997DE');
+            $table->dropForeign('FK_419E5616D8177B3F');
+        });
+
+        Schema::table('box_facilities_to_health_providers', function (Blueprint $table) {
+            $table->dropForeign('FK_F3F54F388200BD4');
+            $table->dropForeign('FK_F3F54F3885BC5E22');
+        });
+
+        Schema::table('body_weight', function (Blueprint $table) {
+            $table->dropForeign('FK_92D1F647A76ED395');
+            $table->dropForeign('FK_92D1F647B03A8386');
+        });
+
+        Schema::table('body_measurement', function (Blueprint $table) {
+            $table->dropForeign('FK_E574BF11A76ED395');
+            $table->dropForeign('FK_E574BF11B03A8386');
+        });
+
+        Schema::table('banks', function (Blueprint $table) {
+            $table->dropForeign('FK_AB063796F92F3E70');
+        });
+
+        Schema::table('attendance_records', function (Blueprint $table) {
+            $table->dropForeign('FK_9B5AB6448002F93C');
+            $table->dropForeign('FK_9B5AB64485BC5E22');
+            $table->dropForeign('FK_9B5AB644B53DEEC2');
+            $table->dropForeign('FK_9B5AB6448200BD4');
+            $table->dropForeign('FK_9B5AB644A76ED395');
+        });
+
+        Schema::table('amendment_amendments', function (Blueprint $table) {
+            $table->dropForeign('FK_A5621DD3B03A8386');
+            $table->dropForeign('FK_A5621DD3D8177B3F');
+        });
+
+        Schema::table('access_privileges_to_user_types', function (Blueprint $table) {
+            $table->dropForeign('FK_AEB04D9D9D419299');
+            $table->dropForeign('FK_AEB04D9DEEB712A8');
+        });
+
+        Schema::dropIfExists('wods');
+
+        Schema::dropIfExists('wod_to_exercise');
+
+        Schema::dropIfExists('wod_exercise_prefix');
+
+        Schema::dropIfExists('wod_capture_likes');
+
+        Schema::dropIfExists('wod_capture_exercises');
+
+        Schema::dropIfExists('wod_capture_comments');
+
+        Schema::dropIfExists('wod_capture');
+
+        Schema::dropIfExists('users_on_hold');
+
+        Schema::dropIfExists('users');
+
+        Schema::dropIfExists('user_types');
+
+        Schema::dropIfExists('user_to_package');
+
+        Schema::dropIfExists('user_to_facility');
+
+        Schema::dropIfExists('user_to_box');
+
+        Schema::dropIfExists('user_to_batch');
+
+        Schema::dropIfExists('user_status');
+
+        Schema::dropIfExists('user_login_attempts');
+
+        Schema::dropIfExists('user_facility_access_privileges');
+
+        Schema::dropIfExists('user_debit_status');
+
+        Schema::dropIfExists('user_contracts');
+
+        Schema::dropIfExists('user_banking_details');
+
+        Schema::dropIfExists('user_access_privileges');
+
+        Schema::dropIfExists('timezones');
+
+        Schema::dropIfExists('terms_of_use');
+
+        Schema::dropIfExists('terms_and_conditions');
+
+        Schema::dropIfExists('task_tasks');
+
+        Schema::dropIfExists('task_assignees');
+
+        Schema::dropIfExists('tags');
+
+        Schema::dropIfExists('taggables');
+
+        Schema::dropIfExists('stripe_webhook_events');
+
+        Schema::dropIfExists('stripe_mandates');
+
+        Schema::dropIfExists('special_rates');
+
+        Schema::dropIfExists('scheduled_user_actions');
+
+        Schema::dropIfExists('scheduled_smses');
+
+        Schema::dropIfExists('scheduled_push');
+
+        Schema::dropIfExists('scheduled_emails');
+
+        Schema::dropIfExists('scheduled_email_attachments');
+
+        Schema::dropIfExists('saved_push_notifications');
+
+        Schema::dropIfExists('remote_config');
+
+        Schema::dropIfExists('regions_to_timezones');
+
+        Schema::dropIfExists('regions_to_currencies');
+
+        Schema::dropIfExists('regions');
+
+        Schema::dropIfExists('refresh_tokens');
+
+        Schema::dropIfExists('programmes');
+
+        Schema::dropIfExists('programme_package_visibilities');
+
+        Schema::dropIfExists('pos_stock_items');
+
+        Schema::dropIfExists('pos_sales');
+
+        Schema::dropIfExists('pos_sale_items');
+
+        Schema::dropIfExists('personal_wod');
+
+        Schema::dropIfExists('payment_gateways');
+
+        Schema::dropIfExists('packages');
+
+        Schema::dropIfExists('package_to_box_facility');
+
+        Schema::dropIfExists('package_limit_types');
+
+        Schema::dropIfExists('own_benchmarks');
+
+        Schema::dropIfExists('movement_scheme');
+
+        Schema::dropIfExists('messenger_messages');
+
+        Schema::dropIfExists('measuring_units');
+
+        Schema::dropIfExists('leaderboard');
+
+        Schema::dropIfExists('lead_waivers');
+
+        Schema::dropIfExists('lead_settings');
+
+        Schema::dropIfExists('lead_members');
+
+        Schema::dropIfExists('injury_updates');
+
+        Schema::dropIfExists('injury_injuries');
+
+        Schema::dropIfExists('health_providers');
+
+        Schema::dropIfExists('go_cardless_webhook_events');
+
+        Schema::dropIfExists('go_cardless_mandates');
+
+        Schema::dropIfExists('gender');
+
+        Schema::dropIfExists('finances_invoice_item_types');
+
+        Schema::dropIfExists('finance_user_gocardless_credentials');
+
+        Schema::dropIfExists('finance_top_ups');
+
+        Schema::dropIfExists('finance_payments');
+
+        Schema::dropIfExists('finance_payment_gateways');
+
+        Schema::dropIfExists('finance_invoices');
+
+        Schema::dropIfExists('finance_invoice_items');
+
+        Schema::dropIfExists('finance_facility_payments');
+
+        Schema::dropIfExists('finance_facility_invoices');
+
+        Schema::dropIfExists('finance_facility_invoice_items');
+
+        Schema::dropIfExists('finance_discounts');
+
+        Schema::dropIfExists('facility_payment_gateway_settings');
+
+        Schema::dropIfExists('facility_membership_discounts');
+
+        Schema::dropIfExists('ext_log_entries');
+
+        Schema::dropIfExists('exercise_master');
+
+        Schema::dropIfExists('exercise_category');
+
+        Schema::dropIfExists('exercise');
+
+        Schema::dropIfExists('drop_in_packages_to_lead_members');
+
+        Schema::dropIfExists('drop_in_packages_to_classes');
+
+        Schema::dropIfExists('drop_in_packages');
+
+        Schema::dropIfExists('doctrine_migration_versions');
+
+        Schema::dropIfExists('discovery_vitality_batches');
+
+        Schema::dropIfExists('debit_order_settings');
+
+        Schema::dropIfExists('debit_days');
+
+        Schema::dropIfExists('debit_day_dates');
+
+        Schema::dropIfExists('debit_batches');
+
+        Schema::dropIfExists('debit_batch_statements');
+
+        Schema::dropIfExists('currencies');
+
+        Schema::dropIfExists('crm_settings');
+
+        Schema::dropIfExists('crm_recipients');
+
+        Schema::dropIfExists('crm_notifications_mailing_lists');
+
+        Schema::dropIfExists('crm_notifications');
+
+        Schema::dropIfExists('crm_notification_widgets');
+
+        Schema::dropIfExists('crm_notification_unsubscriptions');
+
+        Schema::dropIfExists('crm_mailing_lists');
+
+        Schema::dropIfExists('crm_mailing_groups');
+
+        Schema::dropIfExists('crm_mailers');
+
+        Schema::dropIfExists('crm_attachments');
+
+        Schema::dropIfExists('covid19_questionnaire_results');
+
+        Schema::dropIfExists('countries');
+
+        Schema::dropIfExists('coronavirus_vaccination_details');
+
+        Schema::dropIfExists('coach_types');
+
+        Schema::dropIfExists('coach_rates');
+
+        Schema::dropIfExists('classes');
+
+        Schema::dropIfExists('class_types');
+
+        Schema::dropIfExists('class_to_packages');
+
+        Schema::dropIfExists('class_to_days');
+
+        Schema::dropIfExists('class_to_dates');
+
+        Schema::dropIfExists('class_recurring_bookings_days_of_week');
+
+        Schema::dropIfExists('class_recurring_bookings');
+
+        Schema::dropIfExists('class_days');
+
+        Schema::dropIfExists('class_coaches');
+
+        Schema::dropIfExists('class_bookings');
+
+        Schema::dropIfExists('class_booking_waiting_list');
+
+        Schema::dropIfExists('class_booking_status');
+
+        Schema::dropIfExists('broadcast_messages');
+
+        Schema::dropIfExists('boxes');
+
+        Schema::dropIfExists('box_status');
+
+        Schema::dropIfExists('box_settings');
+
+        Schema::dropIfExists('box_facility_to_payment_gateway');
+
+        Schema::dropIfExists('box_facility_categories');
+
+        Schema::dropIfExists('box_facility');
+
+        Schema::dropIfExists('box_facilities_to_health_providers');
+
+        Schema::dropIfExists('body_weight');
+
+        Schema::dropIfExists('body_measurement');
+
+        Schema::dropIfExists('banks');
+
+        Schema::dropIfExists('attendance_records');
+
+        Schema::dropIfExists('amendment_amendments');
+
+        Schema::dropIfExists('account_types');
+
+        Schema::dropIfExists('access_privileges_to_user_types');
+
+        Schema::dropIfExists('access_privileges');
+    }
+};

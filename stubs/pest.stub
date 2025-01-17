@@ -1,0 +1,66 @@
+<?php
+
+beforeEach(function () {
+    $this->endpoint = 'api/endpoint/';
+});
+
+/**
+ * Access denied tests
+ */
+test('a guest cannot access it', function () {
+    $this->get($this->endpoint)->assertUnauthorized();
+})->group('test');
+
+test('a user without a membership cannot access it', function () {
+    $this->get($this->endpoint)->assertForbidden();
+})->asUser()->group('test');
+
+test('a staff member without permission cannot access it', function () {
+    $this->get($this->endpoint)->assertForbidden();
+})->asStaff()->group('test');
+
+test('a gym member without permission cannot access it', function () {
+    $this->get($this->endpoint)->assertForbidden();
+})->asGymMember()->group('test');
+
+test('a gym member with permission cannot access records for others', function () {
+    $this->get($this->endpoint)->assertForbidden();
+})->asGymMember('appropriate:permission')->group('test');
+
+/**
+ * Tenant tests
+ */
+test('a staff member cannot access records for another tenant', function () {
+    $this->get($this->endpoint)->assertNotFound();
+})->asStaff('appropriate:permission')->group('test');
+
+test('a staff member cannot access records for another location', function () {
+    $this->get($this->endpoint)->assertForbidden();
+})->asStaff('appropriate:permission')->group('test');
+
+/**
+ * Access granted tests
+ */
+test('a gym super admin can access it', function () {
+    $this->get($this->endpoint)->assertOk();
+})->asGymSuperAdmin()->group('test');
+
+test('a staff member with permission can access it', function () {
+    $this->get($this->endpoint)->assertOk();
+})->asStaff('appropriate:permission')->group('test');
+
+test('a gym member with permission can access it', function () {
+    $this->get($this->endpoint)->assertOk();
+})->asGymMember('appropriate:permission')->group('test');
+
+/**
+ * Validation tests
+ */
+test('validates key', function ($field, $value) {
+    $this->put($this->endpoint, [$field => $value])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors($field);
+})->asStaff('appropriate:permission')
+    ->with(['key'])
+    ->with('dataset')
+    ->group('test');
